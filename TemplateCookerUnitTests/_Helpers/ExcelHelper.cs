@@ -14,17 +14,18 @@ namespace TemplateCookerUnitTests._Helpers
         {
             var result = new List<List<object>>();
 
-            var sheet = workbook
-                .GetSheet(from.sheetIndex);
+            var sheet = workbook.GetSheet(from.sheetIndex);
+            var rowCount = to.rowIndex - from.rowIndex + 1;
+            var columnCount = to.columnIndex - from.columnIndex + 1;
 
-            foreach (var rowIndex in Enumerable.Range(from.rowIndex, to.rowIndex))
+            foreach (var rowIndex in Enumerable.Range(from.rowIndex, rowCount))
             {
                 var row = sheet.GetRow(rowIndex);
 
                 result.Add(new List<object>());
                 var resultRow = result.Last();
 
-                foreach (var columnIndex in Enumerable.Range(from.columnIndex, to.columnIndex))
+                foreach (var columnIndex in Enumerable.Range(from.columnIndex, columnCount))
                 {
                     var cell = row.GetCell(columnIndex);
                     resultRow.Add(cell.GetValue());

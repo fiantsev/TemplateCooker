@@ -41,7 +41,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
             documentInjector.Inject(workbook);
 
             //assert
-            var values = excelHelper.ReadCellRangeValues(workbook, (1, 1, 1), (2, 2, 2));
+            var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (1, 1, 1));
             values[0][0].Should().Be(1);
             values[0][1].Should().Be(2);
             values[1][0].Should().Be(3);
@@ -68,7 +68,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
             documentInjector.Inject(workbook);
 
             //assert
-            var values = excelHelper.ReadCellRangeValues(workbook, (1, 1, 1), (1, 1, 1));
+            var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (0, 0, 0));
             values[0][0].Should().Be(""); //проверяем что маркер удален из документа
         }
 
@@ -92,7 +92,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
             documentInjector.Inject(workbook);
 
             //assert
-            var values = excelHelper.ReadCellRangeValues(workbook, (1, 1, 1), (1, 1, 1));
+            var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (0, 0, 0));
             values[0][0].Should().Be("text");
         }
     }

@@ -28,7 +28,7 @@ namespace ClosedXmlPlugin
                 case int _:
                 case long _:
                 case double _:
-                    var number = (double)value;
+                    var number = Convert.ToDouble(value);
                     _cell.SetValue(number);
                     _cell.SetDataType(XLDataType.Number);
                     break;
