@@ -22,7 +22,7 @@ namespace TemplateCooker
 
         public void Inject(IWorkbookAbstraction workbook)
         {
-            foreach(var sheet in workbook.GetSheets())
+            foreach (var sheet in workbook.GetSheets())
             {
                 var markerExtractor = new MarkerExtractor(sheet, _markerOptions);
                 var markers = markerExtractor.GetMarkers();

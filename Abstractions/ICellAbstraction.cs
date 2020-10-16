@@ -11,6 +11,7 @@
         string GetStringValue();
         double GetNumberValue();
         bool GetBooleanValue();
+        object GetValue();
 
         void SetValue(object value);
 

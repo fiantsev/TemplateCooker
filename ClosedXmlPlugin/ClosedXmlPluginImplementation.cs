@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ClosedXmlPlugin
 {
-    class ClosedXmlPluginImplementation : IPluginAbstraction
+    public class ClosedXmlPluginImplementation : IPluginAbstraction
     {
         public IWorkbookAbstraction CreateEmptyWorkbook()
         {

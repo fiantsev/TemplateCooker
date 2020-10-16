@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace Abstractions
 {
-    public interface IWorkbookAbstraction
+    public interface IWorkbookAbstraction : IDisposable
     {
         IEnumerable<ISheetAbstraction> GetSheets();
         ISheetAbstraction GetSheet(int index);

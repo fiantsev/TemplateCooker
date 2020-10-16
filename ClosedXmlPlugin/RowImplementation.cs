@@ -14,6 +14,11 @@ namespace ClosedXmlPlugin
             _row = row;
         }
 
+        public ICellAbstraction FirstCell()
+        {
+            return new CellImplementation(_row.FirstCell());
+        }
+
         public ICellAbstraction GetCell(int index)
         {
             var cell = new CellImplementation(_row.Cell(index + 1));
@@ -24,6 +29,11 @@ namespace ClosedXmlPlugin
         {
             var cells = (_row.Cells() as IEnumerable<IXLCell>).Select(x => new CellImplementation(x));
             return cells;
+        }
+
+        public IEnumerable<ICellAbstraction> GetUsedCells()
+        {
+            return _row.CellsUsed().Select(x => new CellImplementation(x));
         }
 
         public void InsertRowsBelow(int rowsCount)

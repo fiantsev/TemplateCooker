@@ -1,4 +1,5 @@
 ﻿using ClosedXML.Excel;
+using ClosedXmlPlugin;
 using FluentAssertions;
 using System.Collections.Generic;
 using System.IO;
@@ -22,7 +23,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
             //assign
             var excelHelper = new ExcelHelper();
             var templatePath = "Assets/Templates/one-marker.xlsx";
-            using var workbook = new XLWorkbook(templatePath);
+            using var workbook = new WorkbookImplementation(new XLWorkbook(templatePath));
             var resourceObject = new TableResourceObject(new List<List<object>> {
                 new List<object> { 1, 2 },
                 new List<object> { 3, 4 },
@@ -52,7 +53,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
         {
             //assign
             var excelHelper = new ExcelHelper();
-            using var workbook = new XLWorkbook("Assets/Templates/one-marker.xlsx");
+            using var workbook = new WorkbookImplementation(new XLWorkbook("Assets/Templates/one-marker.xlsx"));
             var imageBytes = File.ReadAllBytes("Assets/Images/checker.png");
             var injection = new ImageInjection { Resource = new ImageResourceObject(imageBytes) };
             var documentInjectorOptions = new DocumentInjectorOptions
@@ -77,7 +78,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
             //assign
             var excelHelper = new ExcelHelper();
             var templatePath = "Assets/Templates/one-marker.xlsx";
-            using var workbook = new XLWorkbook(templatePath);
+            using var workbook = new WorkbookImplementation(new XLWorkbook(templatePath));
             var injection = new TextInjection { Resource = new TextResourceObject("text") };
             var documentInjectorOptions = new DocumentInjectorOptions
             {

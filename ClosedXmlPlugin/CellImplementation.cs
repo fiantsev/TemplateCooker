@@ -8,6 +8,14 @@ namespace ClosedXmlPlugin
     {
         private IXLCell _cell;
 
+        public int RowIndex => _cell.Address.RowNumber - 1;
+
+        public int ColumnIndex => _cell.Address.ColumnNumber - 1;
+
+        public bool HasFormula => _cell.HasFormula;
+
+        public CellType Type => CellTypeConverter.GetTypeOf(_cell);
+
         public CellImplementation(IXLCell cell)
         {
             _cell = cell;
@@ -57,6 +65,26 @@ namespace ClosedXmlPlugin
         public IMergedCellCollectionAbstraction GetMergedCells()
         {
             return new MergedCellCollectionImplementation(_cell);
+        }
+
+        public string GetStringValue()
+        {
+            return _cell.GetString();
+        }
+
+        public double GetNumberValue()
+        {
+            return _cell.GetDouble();
+        }
+
+        public bool GetBooleanValue()
+        {
+            return _cell.GetBoolean();
+        }
+
+        public object GetValue()
+        {
+            return _cell.Value;
         }
     }
 }
