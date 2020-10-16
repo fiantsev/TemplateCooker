@@ -1,5 +1,4 @@
-﻿using ClosedXML.Excel;
-using System;
+﻿using Abstractions;
 using System.Collections.Generic;
 using TemplateCooker.Domain.Markers;
 
@@ -7,11 +6,11 @@ namespace TemplateCooker.Service.Utils
 {
     public class CellUtils
     {
-        public static bool IsMarkedCell(IXLCell cell, MarkerOptions markerOptions)
+        public static bool IsMarkedCell(ICellAbstraction cell, MarkerOptions markerOptions)
         {
-            if (cell.DataType == XLDataType.Text && !cell.HasFormula)
+            if (cell.Type == CellType.String && !cell.HasFormula)
             {
-                var stringCellValue = cell.GetString().Trim();
+                var stringCellValue = cell.GetStringValue().Trim();
                 if (stringCellValue.Length < (markerOptions.Prefix.Length + markerOptions.Suffix.Length))
                     return false;
                 var isPrefixMatch = stringCellValue.Substring(0, markerOptions.Prefix.Length) == markerOptions.Prefix;
@@ -22,48 +21,28 @@ namespace TemplateCooker.Service.Utils
             return false;
         }
 
-        public static string ExtractMarkerValue(IXLCell cell, MarkerOptions markerOptions)
+        public static string ExtractMarkerValue(ICellAbstraction cell, MarkerOptions markerOptions)
         {
-            var stringCellValue = cell.GetString().Trim();
+            var stringCellValue = cell.GetStringValue().Trim();
             return stringCellValue.Substring(markerOptions.Prefix.Length, stringCellValue.Length - (markerOptions.Prefix.Length + markerOptions.Suffix.Length));
         }
 
         /// <summary>
         /// TODO: переписать реализацию
         /// </summary>
-        public static void SetDynamicCellValue(IXLCell cell, object value)
+        public static void SetDynamicCellValue(ICellAbstraction cell, object value)
         {
-            switch (value)
-            {
-                case string stringValue:
-                    cell.SetValue(stringValue);
-                    cell.SetDataType(XLDataType.Text);
-                    break;
-                case int intValue:
-                    cell.SetValue(intValue);
-                    cell.SetDataType(XLDataType.Number);
-                    break;
-                case long longValue:
-                    cell.SetValue(longValue);
-                    cell.SetDataType(XLDataType.Number);
-                    break;
-                case double doubleValue:
-                    cell.SetValue(doubleValue);
-                    cell.SetDataType(XLDataType.Number);
-                    break;
-                default:
-                    throw new Exception($"Неизвестный тип: {value?.GetType().Name}");
-            }
+            cell.SetValue(value);
         }
 
-        public static IEnumerable<IXLRow> EnumerateMergedRows(IXLCell fromCell)
+        public static IEnumerable<IRowAbstraction> EnumerateMergedRows(ICellAbstraction fromCell)
         {
-            return new MergedRowCollection(fromCell);
+            return fromCell.GetMergedRows();
         }
 
-        public static IEnumerable<IXLCell> EnumerateMergedCells(IXLCell fromCell)
+        public static IEnumerable<ICellAbstraction> EnumerateMergedCells(ICellAbstraction fromCell)
         {
-            return new MergedCellCollection(fromCell);
+            return fromCell.GetMergedCells();
         }
     }
 }

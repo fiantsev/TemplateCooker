@@ -1,9 +1,9 @@
-﻿using ClosedXML.Excel;
+﻿using Abstractions;
 
 namespace TemplateCooker
 {
     public interface IDocumentInjector
     {
-        void Inject(IXLWorkbook workbook);
+        void Inject(IWorkbookAbstraction workbook);
     }
 }

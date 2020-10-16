@@ -1,5 +1,4 @@
-﻿using ClosedXML.Excel;
-using System.Linq;
+﻿using Abstractions;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Creation;
 using TemplateCooker.Service.Extraction;
@@ -21,28 +20,26 @@ namespace TemplateCooker
             _markerOptions = options.MarkerOptions;
         }
 
-        public void Inject(IXLWorkbook workbook)
+        public void Inject(IWorkbookAbstraction workbook)
         {
-
-            foreach (var sheetIndex in Enumerable.Range(1, workbook.Worksheets.Count))
+            foreach(var sheet in workbook.GetSheets())
             {
-                var sheet = workbook.Worksheet(sheetIndex);
                 var markerExtractor = new MarkerExtractor(sheet, _markerOptions);
                 var markers = markerExtractor.GetMarkers();
                 var markerRegions = new MarkerRangeCollection(markers);
 
                 foreach (var markerRegion in markerRegions)
-                    InjectResourceToSheet(sheet, markerRegion);
+                    InjectResourceToSheet(workbook, markerRegion);
             }
         }
 
-        private void InjectResourceToSheet(IXLWorksheet sheet, MarkerRange markerRegion)
+        private void InjectResourceToSheet(IWorkbookAbstraction workbook, MarkerRange markerRegion)
         {
             var injection = _injectionProvider.Resolve(markerRegion.StartMarker.Id);
             var injectionContext = new InjectionContext
             {
                 MarkerRange = markerRegion,
-                Workbook = sheet.Workbook,
+                Workbook = workbook,
                 Injection = injection,
             };
 

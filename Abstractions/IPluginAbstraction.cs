@@ -2,7 +2,7 @@
 
 namespace Abstractions
 {
-    public interface IPlugin
+    public interface IPluginAbstraction
     {
         IWorkbookAbstraction CreateEmptyWorkbook();
         IWorkbookAbstraction OpenWorkbook(Stream stream);

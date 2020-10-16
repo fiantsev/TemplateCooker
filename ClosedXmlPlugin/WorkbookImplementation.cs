@@ -31,5 +31,14 @@ namespace ClosedXmlPlugin
             var sheets = _workbook.Worksheets.Select(x => new SheetImplementation(x));
             return sheets;
         }
+
+        public void AddPicture(MemoryStream imageStream, int sheetIndex, int rowIndex, int columnIndex)
+        {
+            var sheet = _workbook.Worksheet(sheetIndex + 1);
+
+            sheet
+                .AddPicture(imageStream)
+                .MoveTo(sheet.Cell(rowIndex + 1, columnIndex + 1));
+        }
     }
 }

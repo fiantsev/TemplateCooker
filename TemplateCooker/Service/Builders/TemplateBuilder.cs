@@ -1,24 +1,23 @@
-﻿using ClosedXML.Excel;
+﻿using Abstractions;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Creation;
 using TemplateCooker.Service.Extraction;
-using TemplateCooker.Service.FormulaCalculation;
 
-namespace TemplateCooker.Service
+namespace TemplateCooker.Service.Builders
 {
     public class TemplateBuilder
     {
-        private XLWorkbook _workbook;
+        private IWorkbookAbstraction _workbook;
         private bool _recalculateFormulasOnBuild;
         private FormulaCalculationOptions _formulaCalculationOptions;
 
-        public TemplateBuilder(Stream workbookStream)
+        public TemplateBuilder(Stream workbookStream, IPluginAbstraction plugin)
         {
             workbookStream.Position = 0;
-            _workbook = new XLWorkbook(workbookStream);
+            _workbook = plugin.OpenWorkbook(workbookStream);
             _formulaCalculationOptions = new FormulaCalculationOptions();
         }
 
@@ -48,14 +47,11 @@ namespace TemplateCooker.Service
             return this;
         }
 
-        public MemoryStream Build(bool validate = true)
+        public MemoryStream Build()
         {
             var resultStream = new MemoryStream();
-
-            _workbook.ForceFullCalculation = _formulaCalculationOptions.ForceFullCalculation;
-            _workbook.FullCalculationOnLoad = _formulaCalculationOptions.FullCalculationOnLoad;
-
-            _workbook.SaveAs(resultStream, validate, _recalculateFormulasOnBuild);
+            _workbook.SetProperties(_formulaCalculationOptions.ForceFullCalculation, _formulaCalculationOptions.FullCalculationOnLoad, _recalculateFormulasOnBuild);
+            _workbook.Save(resultStream);
             resultStream.Position = 0;
 
             //делаем инстанс более не юзабельным

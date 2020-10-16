@@ -1,23 +1,24 @@
-﻿using ClosedXML.Excel;
+﻿using Abstractions;
+using ClosedXML.Excel;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace TemplateCooker.Service.Utils
+namespace ClosedXmlPlugin
 {
-    public class MergedCellCollection : IEnumerable<IXLCell>
+    public class MergedCellCollectionImplementation : IMergedCellCollectionAbstraction
     {
         private IXLCell _nextCell;
 
-        public MergedCellCollection(IXLCell fromCell)
+        public MergedCellCollectionImplementation(IXLCell fromCell)
         {
             _nextCell = fromCell;
         }
 
-        public IEnumerator<IXLCell> GetEnumerator()
+        public IEnumerator<ICellAbstraction> GetEnumerator()
         {
             while (true)
             {
-                yield return _nextCell;
+                yield return new CellImplementation(_nextCell); //перепаковываем
                 var step = _nextCell.IsMerged()
                     ? _nextCell.MergedRange().ColumnCount()
                     : 1;

@@ -3,9 +3,8 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using TemplateCooker.Domain.Markers;
-using TemplateCooker.Service;
+using TemplateCooker.Service.Builders;
 using TemplateCooker.Service.Creation;
-using TemplateCooker.Service.FormulaCalculation;
 
 namespace XlsxTemplateReporter
 {
@@ -32,7 +31,7 @@ namespace XlsxTemplateReporter
                 Console.WriteLine($"workbook: {file}");
                 using var fileStream = File.Open(file.In, FileMode.Open, FileAccess.Read);
 
-                var templateBuilder = new TemplateBuilder(fileStream);
+                var templateBuilder = new TemplateBuilder(fileStream, new ClosedXmlPluginImplementation());
                 var markerOptions = new MarkerOptions("{{", ".", "}}");
 
                 //при реальном использование есть необходимость извлечь все маркеры прежде чем двигаться дальше
@@ -53,7 +52,7 @@ namespace XlsxTemplateReporter
                     .InjectData(documentInjectorOptions)
                     .SetupFormulaCalculations(new FormulaCalculationOptions { ForceFullCalculation = true, FullCalculationOnLoad = true })
                     .RecalculateFormulasOnBuild(false)
-                    .Build(false);
+                    .Build();
 
                 using (var outputFileStream = File.Open(file.Out, FileMode.Create, FileAccess.ReadWrite))
                     documentStream.CopyTo(outputFileStream);

@@ -1,4 +1,4 @@
-﻿namespace TemplateCooker.Service.FormulaCalculation
+﻿namespace TemplateCooker.Service.Builders
 {
     public class FormulaCalculationOptions
     {

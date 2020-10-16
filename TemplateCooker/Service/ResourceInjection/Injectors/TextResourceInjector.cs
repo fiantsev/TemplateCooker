@@ -11,9 +11,9 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             var markerPosition = context.MarkerRange.StartMarker.Position;
 
             var cell = context.Workbook
-                .Worksheet(markerPosition.SheetIndex)
-                .Row(markerPosition.RowIndex)
-                .Cell(markerPosition.CellIndex);
+                .GetSheet(markerPosition.SheetIndex)
+                .GetRow(markerPosition.RowIndex)
+                .GetCell(markerPosition.CellIndex);
 
             var text = (context.Injection as TextInjection).Resource.Object;
 

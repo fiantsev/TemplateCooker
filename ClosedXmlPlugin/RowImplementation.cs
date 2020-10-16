@@ -25,5 +25,10 @@ namespace ClosedXmlPlugin
             var cells = (_row.Cells() as IEnumerable<IXLCell>).Select(x => new CellImplementation(x));
             return cells;
         }
+
+        public void InsertRowsBelow(int rowsCount)
+        {
+            _row.InsertRowsBelow(rowsCount);
+        }
     }
 }

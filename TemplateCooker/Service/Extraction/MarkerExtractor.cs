@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+﻿using Abstractions;
 using System.Collections;
 using System.Collections.Generic;
 using TemplateCooker.Domain.Markers;
@@ -8,24 +8,24 @@ namespace TemplateCooker.Service.Extraction
 {
     public class MarkerExtractor : IMarkerExtractor, IEnumerable<Marker>
     {
-        private readonly IEnumerable<IXLWorksheet> _sheets;
+        private readonly IEnumerable<ISheetAbstraction> _sheets;
         private readonly MarkerOptions _markerOptions;
 
-        public MarkerExtractor(IXLWorkbook workbook, MarkerOptions markerOptions)
+        public MarkerExtractor(IWorkbookAbstraction workbook, MarkerOptions markerOptions)
         {
-            _sheets = workbook.Worksheets;
+            _sheets = workbook.GetSheets();
             _markerOptions = markerOptions;
         }
 
-        public MarkerExtractor(IEnumerable<IXLWorksheet> sheets, MarkerOptions markerOptions)
+        public MarkerExtractor(IEnumerable<ISheetAbstraction> sheets, MarkerOptions markerOptions)
         {
             _sheets = sheets;
             _markerOptions = markerOptions;
         }
 
-        public MarkerExtractor(IXLWorksheet sheet, MarkerOptions markerOptions)
+        public MarkerExtractor(ISheetAbstraction sheet, MarkerOptions markerOptions)
         {
-            _sheets = new List<IXLWorksheet> { sheet };
+            _sheets = new List<ISheetAbstraction> { sheet };
             _markerOptions = markerOptions;
         }
 
@@ -38,12 +38,9 @@ namespace TemplateCooker.Service.Extraction
         {
             foreach (var sheet in _sheets)
             {
-                var rangeUsed = sheet.RangeUsed();
-                if (rangeUsed == null) continue;
-
-                foreach (var row in rangeUsed.Rows())
+                foreach (var row in sheet.GetUsedRows())
                 {
-                    foreach (var cell in row.CellsUsed())
+                    foreach (var cell in row.GetUsedCells())
                     {
                         if (CellUtils.IsMarkedCell(cell, _markerOptions))
                         {
@@ -56,9 +53,9 @@ namespace TemplateCooker.Service.Extraction
                                     : markerId,
                                 Position = new MarkerPosition
                                 {
-                                    SheetIndex = SheetUtils.SheetIndex(sheet),
-                                    RowIndex = row.FirstCell().Address.RowNumber,
-                                    CellIndex = cell.Address.ColumnNumber
+                                    SheetIndex = sheet.SheetIndex,
+                                    RowIndex = row.FirstCell().RowIndex,
+                                    CellIndex = cell.ColumnIndex
                                 },
                                 MarkerType = isEndMarker ? MarkerType.End : MarkerType.Start
                             };

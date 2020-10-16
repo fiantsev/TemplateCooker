@@ -1,25 +1,26 @@
-﻿using ClosedXML.Excel;
+﻿using Abstractions;
+using ClosedXML.Excel;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace TemplateCooker.Service.Utils
+namespace ClosedXmlPlugin
 {
-    public class MergedRowCollection : IEnumerable<IXLRow>
+    public class MergedRowCollectionImplementation : IMergedRowCollectionAbstraction
     {
         private IXLCell _fromCell;
         private IXLRow _nextRow;
 
-        public MergedRowCollection(IXLCell fromCell)
+        public MergedRowCollectionImplementation(IXLCell fromCell)
         {
             _fromCell = fromCell;
             _nextRow = fromCell.WorksheetRow();
         }
 
-        public IEnumerator<IXLRow> GetEnumerator()
+        public IEnumerator<IRowAbstraction> GetEnumerator()
         {
             while (true)
             {
-                yield return _nextRow;
+                yield return new RowImplementation(_nextRow);
 
                 var firstCellOfRow = _nextRow.Worksheet.Cell(_nextRow.FirstCell().Address.RowNumber, _fromCell.Address.ColumnNumber);
                 var step = firstCellOfRow.IsMerged()

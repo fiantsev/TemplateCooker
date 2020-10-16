@@ -1,5 +1,4 @@
-﻿using ClosedXML.Excel;
-using System;
+﻿using System;
 using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.ResourceObjects;
 using TemplateCooker.Service.Utils;
@@ -29,8 +28,8 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                         ? table.Count - 1 //-1 потому что одна ячейка уже есть, та в которой находиться сам маркер
                         : 0;
                     if (countOfRowsToInsert != 0)
-                        injectionContext.Workbook.Worksheet(markerRange.StartMarker.Position.SheetIndex)
-                            .Row(markerRange.EndMarker.Position.RowIndex)
+                        injectionContext.Workbook.GetSheet(markerRange.StartMarker.Position.SheetIndex)
+                            .GetRow(markerRange.EndMarker.Position.RowIndex)
                             .InsertRowsBelow(countOfRowsToInsert);
                     return;
                 case LayoutShiftType.MoveCells:
@@ -44,8 +43,8 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
         {
             var markerPosition = injectionContext.MarkerRange.StartMarker.Position;
             var table = (injectionContext.Injection as TableInjection).Resource.Object;
-            var sheet = injectionContext.Workbook.Worksheet(markerPosition.SheetIndex);
-            var topLeftCell = sheet.Cell(markerPosition.RowIndex, markerPosition.CellIndex);
+            var sheet = injectionContext.Workbook.GetSheet(markerPosition.SheetIndex);
+            var topLeftCell = sheet.GetRow(markerPosition.RowIndex).GetCell(markerPosition.CellIndex);
 
             var rowCount = table.Count;
             var columnCount = rowCount == 0
@@ -54,7 +53,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
 
             //удаляем маркер
             if (rowCount == 0 || columnCount == 0)
-                topLeftCell.Clear(XLClearOptions.Contents);
+                topLeftCell.SetValue(string.Empty);
 
             var mergedRowsEnumerator = CellUtils.EnumerateMergedRows(topLeftCell).GetEnumerator();
 
@@ -63,7 +62,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                 mergedRowsEnumerator.MoveNext();
                 var excelRow = mergedRowsEnumerator.Current;
 
-                var firstCellOfRow = sheet.Cell(excelRow.FirstCell().Address.RowNumber, topLeftCell.Address.ColumnNumber);
+                var firstCellOfRow = sheet.GetRow(excelRow.FirstCell().RowIndex).GetCell(topLeftCell.ColumnIndex);
                 var mergedCellsEnumerator = CellUtils.EnumerateMergedCells(firstCellOfRow).GetEnumerator();
 
                 dataRow.ForEach(dataValue =>
