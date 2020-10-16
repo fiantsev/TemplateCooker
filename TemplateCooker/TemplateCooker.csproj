@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Authors>TilliWilli</Authors>
+    <Version>1.0.11</Version>
+    <Description>Excel reporting assistant</Description>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Domain\Content\**" />
+    <EmbeddedResource Remove="Domain\Content\**" />
+    <None Remove="Domain\Content\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.95.3" />
+  </ItemGroup>
+
+</Project>
