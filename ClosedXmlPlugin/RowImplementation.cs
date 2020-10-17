@@ -1,10 +1,12 @@
 ﻿using Abstractions;
 using ClosedXML.Excel;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ClosedXmlPlugin
 {
+    [DebuggerDisplay("{_row}")]
     public class RowImplementation : IRowAbstraction
     {
         private IXLRow _row;
@@ -39,6 +41,10 @@ namespace ClosedXmlPlugin
         public void InsertRowsBelow(int rowsCount)
         {
             _row.InsertRowsBelow(rowsCount);
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

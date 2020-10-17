@@ -7,14 +7,14 @@ namespace TemplateCooker.Domain.Markers
     {
         public int SheetIndex { get; set; }
         public int RowIndex { get; set; }
-        public int CellIndex { get; set; }
+        public int ColumnIndex { get; set; }
 
         public override bool Equals(object obj)
         {
             return obj is MarkerPosition position &&
                    SheetIndex == position.SheetIndex &&
                    RowIndex == position.RowIndex &&
-                   CellIndex == position.CellIndex;
+                   ColumnIndex == position.ColumnIndex;
         }
 
         public bool Equals(MarkerPosition other)
@@ -27,7 +27,7 @@ namespace TemplateCooker.Domain.Markers
             int hashCode = 1713590872;
             hashCode = hashCode * -1521134295 + SheetIndex.GetHashCode();
             hashCode = hashCode * -1521134295 + RowIndex.GetHashCode();
-            hashCode = hashCode * -1521134295 + CellIndex.GetHashCode();
+            hashCode = hashCode * -1521134295 + ColumnIndex.GetHashCode();
             return hashCode;
         }
 

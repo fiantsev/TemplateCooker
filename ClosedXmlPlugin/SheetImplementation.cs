@@ -1,10 +1,12 @@
 ﻿using Abstractions;
 using ClosedXML.Excel;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace ClosedXmlPlugin
 {
+    [DebuggerDisplay("{_sheet}")]
     public class SheetImplementation : ISheetAbstraction
     {
         private IXLWorksheet _sheet;
@@ -32,6 +34,10 @@ namespace ClosedXmlPlugin
         public IEnumerable<IRowAbstraction> GetUsedRows()
         {
             return _sheet.RowsUsed().Select(x => new RowImplementation(x));
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

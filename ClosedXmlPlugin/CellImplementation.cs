@@ -1,9 +1,11 @@
 ﻿using Abstractions;
 using ClosedXML.Excel;
 using System;
+using System.Diagnostics;
 
 namespace ClosedXmlPlugin
 {
+    [DebuggerDisplay("{_cell}")]
     public class CellImplementation : ICellAbstraction
     {
         private IXLCell _cell;
@@ -85,6 +87,10 @@ namespace ClosedXmlPlugin
         public object GetValue()
         {
             return _cell.Value;
+        }
+
+        public void Dispose()
+        {
         }
     }
 }

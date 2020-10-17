@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Abstractions
 {
-    public interface IRowAbstraction
+    public interface IRowAbstraction : IDisposable
     {
         IEnumerable<ICellAbstraction> GetCells();
         IEnumerable<ICellAbstraction> GetUsedCells();

@@ -13,7 +13,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             var sheet = workbook.GetSheet(startMarker.Position.SheetIndex);
             var cell = sheet
                 .GetRow(startMarker.Position.RowIndex)
-                .GetCell(startMarker.Position.CellIndex);
+                .GetCell(startMarker.Position.ColumnIndex);
             var imageResource = (context.Injection as ImageInjection).Resource;
 
             //убираем маркер
@@ -25,7 +25,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                     imageStream,
                     startMarker.Position.SheetIndex,
                     startMarker.Position.RowIndex,
-                    startMarker.Position.CellIndex
+                    startMarker.Position.ColumnIndex
                 );
             }
         };

@@ -13,7 +13,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             var cell = context.Workbook
                 .GetSheet(markerPosition.SheetIndex)
                 .GetRow(markerPosition.RowIndex)
-                .GetCell(markerPosition.CellIndex);
+                .GetCell(markerPosition.ColumnIndex);
 
             var text = (context.Injection as TextInjection).Resource.Object;
 

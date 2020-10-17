@@ -1,6 +1,5 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace TemplateCooker.Domain.Markers
 {
@@ -15,16 +14,8 @@ namespace TemplateCooker.Domain.Markers
 
         public IEnumerator<MarkerRange> GetEnumerator()
         {
-            //кэшируем
-            var endMarkers = _markers.Where(x => x.MarkerType == MarkerType.End).ToList();
-            var startMarkers = _markers.Where(x => x.MarkerType == MarkerType.Start);
-
-            foreach (var startMarker in startMarkers)
-            {
-                var endMarker = endMarkers.FirstOrDefault(x => x.Id == startMarker.Id);
-                var markerRegion = new MarkerRange(startMarker, endMarker);
-                yield return markerRegion;
-            }
+            foreach (var marker in _markers)
+                yield return new MarkerRange(marker);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

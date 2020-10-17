@@ -34,5 +34,9 @@ namespace ClosedXmlPlugin
         {
             return GetEnumerator();
         }
+
+        public void Dispose()
+        {
+        }
     }
 }

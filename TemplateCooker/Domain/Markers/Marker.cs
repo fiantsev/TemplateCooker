@@ -16,7 +16,7 @@
                 {
                     SheetIndex = Position.SheetIndex,
                     RowIndex = Position.RowIndex,
-                    CellIndex = Position.CellIndex,
+                    ColumnIndex = Position.ColumnIndex,
                 }
             };
         }

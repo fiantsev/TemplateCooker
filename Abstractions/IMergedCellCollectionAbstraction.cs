@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Abstractions
 {
-    public interface IMergedCellCollectionAbstraction : IEnumerable<ICellAbstraction>
+    public interface IMergedCellCollectionAbstraction : IEnumerable<ICellAbstraction>, IDisposable
     {
     }
 }

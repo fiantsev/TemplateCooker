@@ -1,6 +1,8 @@
-﻿namespace Abstractions
+﻿using System;
+
+namespace Abstractions
 {
-    public interface ICellAbstraction
+    public interface ICellAbstraction : IDisposable
     {
         int RowIndex { get; }
         int ColumnIndex { get; }

@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Abstractions
 {
-    public interface ISheetAbstraction
+    public interface ISheetAbstraction : IDisposable
     {
         int SheetIndex { get; }
         string SheetName { get; }

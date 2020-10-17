@@ -55,7 +55,7 @@ namespace TemplateCooker.Service.Extraction
                                 {
                                     SheetIndex = sheet.SheetIndex,
                                     RowIndex = row.FirstCell().RowIndex,
-                                    CellIndex = cell.ColumnIndex
+                                    ColumnIndex = cell.ColumnIndex
                                 },
                                 MarkerType = isEndMarker ? MarkerType.End : MarkerType.Start
                             };

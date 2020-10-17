@@ -44,7 +44,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             var markerPosition = injectionContext.MarkerRange.StartMarker.Position;
             var table = (injectionContext.Injection as TableInjection).Resource.Object;
             var sheet = injectionContext.Workbook.GetSheet(markerPosition.SheetIndex);
-            var topLeftCell = sheet.GetRow(markerPosition.RowIndex).GetCell(markerPosition.CellIndex);
+            var topLeftCell = sheet.GetRow(markerPosition.RowIndex).GetCell(markerPosition.ColumnIndex);
 
             var rowCount = table.Count;
             var columnCount = rowCount == 0
