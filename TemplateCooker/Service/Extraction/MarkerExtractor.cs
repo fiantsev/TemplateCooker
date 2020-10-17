@@ -42,25 +42,24 @@ namespace TemplateCooker.Service.Extraction
                 {
                     foreach (var cell in row.GetUsedCells())
                     {
-                        if (CellUtils.IsMarkedCell(cell, _markerOptions))
+                        var markerId = CellUtils.ExtractMarkerValueOrNull(cell, _markerOptions);
+                        if (markerId == null)
+                            continue;
+                        var isEndMarker = markerId.Substring(0, _markerOptions.Terminator.Length) == _markerOptions.Terminator;
+                        var marker = new Marker
                         {
-                            var markerId = CellUtils.ExtractMarkerValue(cell, _markerOptions);
-                            var isEndMarker = markerId.Substring(0, _markerOptions.Terminator.Length) == _markerOptions.Terminator;
-                            var marker = new Marker
+                            Id = isEndMarker
+                                ? markerId.Substring(_markerOptions.Terminator.Length)
+                                : markerId,
+                            Position = new MarkerPosition
                             {
-                                Id = isEndMarker
-                                    ? markerId.Substring(_markerOptions.Terminator.Length)
-                                    : markerId,
-                                Position = new MarkerPosition
-                                {
-                                    SheetIndex = sheet.SheetIndex,
-                                    RowIndex = row.FirstCell().RowIndex,
-                                    ColumnIndex = cell.ColumnIndex
-                                },
-                                MarkerType = isEndMarker ? MarkerType.End : MarkerType.Start
-                            };
-                            yield return marker;
-                        }
+                                SheetIndex = sheet.SheetIndex,
+                                RowIndex = row.FirstCell().RowIndex,
+                                ColumnIndex = cell.ColumnIndex
+                            },
+                            MarkerType = isEndMarker ? MarkerType.End : MarkerType.Start
+                        };
+                        yield return marker;
                     }
                 }
             }

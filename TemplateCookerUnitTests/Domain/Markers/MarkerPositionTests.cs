@@ -10,8 +10,8 @@ namespace TemplateCookerUnitTests.Domain.Markers
         public void MarkerPosition_должены_быть_равны_если_все_внутрение_свойства_одинаковые()
         {
             //assign
-            var markerPosition1 = new MarkerPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0};
-            var markerPosition2 = new MarkerPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0};
+            var markerPosition1 = new MarkerPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0 };
+            var markerPosition2 = new MarkerPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0 };
 
             //act
             //assert

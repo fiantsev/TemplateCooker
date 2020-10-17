@@ -55,7 +55,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             if (rowCount == 0 || columnCount == 0)
                 topLeftCell.SetValue(string.Empty);
 
-            var mergedRowsEnumerator = CellUtils.EnumerateMergedRows(topLeftCell).GetEnumerator();
+            var mergedRowsEnumerator = topLeftCell.GetMergedRows().GetEnumerator();
 
             table.ForEach(dataRow =>
             {
@@ -63,12 +63,12 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                 var excelRow = mergedRowsEnumerator.Current;
 
                 var firstCellOfRow = sheet.GetRow(excelRow.FirstCell().RowIndex).GetCell(topLeftCell.ColumnIndex);
-                var mergedCellsEnumerator = CellUtils.EnumerateMergedCells(firstCellOfRow).GetEnumerator();
+                var mergedCellsEnumerator = firstCellOfRow.GetMergedCells().GetEnumerator();
 
                 dataRow.ForEach(dataValue =>
                 {
                     mergedCellsEnumerator.MoveNext();
-                    CellUtils.SetDynamicCellValue(mergedCellsEnumerator.Current, dataValue);
+                    mergedCellsEnumerator.Current.SetValue(dataValue);
                 });
             });
         }

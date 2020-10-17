@@ -16,8 +16,8 @@ namespace XlsxTemplateReporter
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var templates = new[]
             {
-                //"one-marker",
-                "big-file",
+                "tow-markers-on-one-row",
+                //"big-file-untouched",
             };
             var files = templates
                 .Select(x => new

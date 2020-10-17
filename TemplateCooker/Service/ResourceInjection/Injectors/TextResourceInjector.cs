@@ -1,6 +1,5 @@
 ﻿using System;
 using TemplateCooker.Domain.Injections;
-using TemplateCooker.Service.Utils;
 
 namespace TemplateCooker.Service.ResourceInjection.Injectors
 {
@@ -17,7 +16,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
 
             var text = (context.Injection as TextInjection).Resource.Object;
 
-            CellUtils.SetDynamicCellValue(cell, text);
+            cell.SetValue(text);
         };
     }
 }
