@@ -17,9 +17,6 @@ namespace Abstractions
 
         void SetValue(object value);
 
-
-        //подумать правильная ли это реализация
-        IMergedRowCollectionAbstraction GetMergedRows();
-        IMergedCellCollectionAbstraction GetMergedCells();
+        IMergedCellCollectionAbstraction GetMergedCells(int rowCount, int columnCount);
     }
 }

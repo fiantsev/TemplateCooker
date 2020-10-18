@@ -15,13 +15,13 @@ namespace XlsxTemplateReporter
             {
                 case "table1":
                     {
-                        var resource = GetResourceObjectStorage()["tableOfInt"];
+                        var resource = GetResourceObjectStorage()["tableOfObjects"];
                         return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
 
                     }
                 case "table2":
                     {
-                        var resource = GetResourceObjectStorage()["tableOfInt"];
+                        var resource = GetResourceObjectStorage()["tableOfString"];
                         return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveCells };
 
                     }
@@ -66,7 +66,7 @@ namespace XlsxTemplateReporter
 
             var tableOfObjects = new List<List<object>>
             {
-                new List<object> { "1", 2, true, 3.0, (long)4, 5.0f, null },
+                new List<object> { true, null, "1", 2, 3.0, (long)4, 5.0f },
             };
 
             var dictionary = new Dictionary<string, ResourceObject>

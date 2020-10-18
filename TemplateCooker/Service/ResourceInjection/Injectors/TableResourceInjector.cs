@@ -1,7 +1,6 @@
 ﻿using System;
 using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Service.Utils;
 
 namespace TemplateCooker.Service.ResourceInjection.Injectors
 {
@@ -55,22 +54,14 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             if (rowCount == 0 || columnCount == 0)
                 topLeftCell.SetValue(string.Empty);
 
-            var mergedRowsEnumerator = topLeftCell.GetMergedRows().GetEnumerator();
-
-            table.ForEach(dataRow =>
+            var cellCounter = 0;
+            foreach (var cell in topLeftCell.GetMergedCells(rowCount, columnCount))
             {
-                mergedRowsEnumerator.MoveNext();
-                var excelRow = mergedRowsEnumerator.Current;
-
-                var firstCellOfRow = sheet.GetRow(excelRow.FirstCell().RowIndex).GetCell(topLeftCell.ColumnIndex);
-                var mergedCellsEnumerator = firstCellOfRow.GetMergedCells().GetEnumerator();
-
-                dataRow.ForEach(dataValue =>
-                {
-                    mergedCellsEnumerator.MoveNext();
-                    mergedCellsEnumerator.Current.SetValue(dataValue);
-                });
-            });
+                var rowIndex = cellCounter / columnCount;
+                var columnIndex = cellCounter % columnCount;
+                cell.SetValue(table[rowIndex][columnIndex]);
+                ++cellCounter;
+            }
         }
     }
 }

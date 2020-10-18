@@ -16,7 +16,7 @@ namespace XlsxTemplateReporter
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var templates = new[]
             {
-                "tow-markers-on-one-row",
+                "one-marker-merged-cells",
                 //"big-file-untouched",
             };
             var files = templates
