@@ -1,4 +1,4 @@
-﻿using Abstractions;
+﻿using PluginAbstraction;
 using System.IO;
 
 namespace ClosedXmlPlugin

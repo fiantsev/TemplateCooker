@@ -1,4 +1,4 @@
-﻿using Abstractions;
+﻿using PluginAbstraction;
 using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.Markers;
 

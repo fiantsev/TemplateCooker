@@ -1,4 +1,4 @@
-﻿using Abstractions;
+﻿using PluginAbstraction;
 using TemplateCooker.Domain.Markers;
 
 namespace TemplateCooker.Service.Utils

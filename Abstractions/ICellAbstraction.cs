@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Abstractions
+namespace PluginAbstraction
 {
     public interface ICellAbstraction : IDisposable
     {

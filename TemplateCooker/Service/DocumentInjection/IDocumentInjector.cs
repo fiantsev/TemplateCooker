@@ -1,4 +1,4 @@
-﻿using Abstractions;
+﻿using PluginAbstraction;
 
 namespace TemplateCooker
 {

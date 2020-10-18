@@ -1,4 +1,4 @@
-﻿using Abstractions;
+﻿using PluginAbstraction;
 using System.Collections.Generic;
 using System.Linq;
 

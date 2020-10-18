@@ -1,4 +1,4 @@
-﻿namespace Abstractions
+﻿namespace PluginAbstraction
 {
     public enum CellType
     {

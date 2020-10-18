@@ -1,6 +1,6 @@
 ﻿using System.IO;
 
-namespace Abstractions
+namespace PluginAbstraction
 {
     public interface IPluginAbstraction
     {

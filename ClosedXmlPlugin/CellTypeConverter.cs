@@ -1,4 +1,4 @@
-﻿using Abstractions;
+﻿using PluginAbstraction;
 using ClosedXML.Excel;
 
 namespace ClosedXmlPlugin

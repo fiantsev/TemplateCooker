@@ -9,9 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App", "App\App.csproj", "{B
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TemplateCookerUnitTests", "TemplateCookerUnitTests\TemplateCookerUnitTests.csproj", "{43EA4366-65ED-4036-A5B8-F21E47691FA1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClosedXmlPlugin", "ClosedXmlPlugin\ClosedXmlPlugin.csproj", "{2DA9D06F-935B-4F9A-9438-7588A5BEAFC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClosedXmlPlugin", "ClosedXmlPlugin\ClosedXmlPlugin.csproj", "{2DA9D06F-935B-4F9A-9438-7588A5BEAFC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Abstractions", "Abstractions\Abstractions.csproj", "{721FBB13-F007-4DF6-95D8-4CFB3C9C598B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginAbstraction", "Abstractions\PluginAbstraction.csproj", "{721FBB13-F007-4DF6-95D8-4CFB3C9C598B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
