@@ -1,46 +1,49 @@
-﻿using ClosedXML.Excel;
+﻿using NPOI.SS.UserModel;
 using PluginAbstraction;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace ClosedXmlPlugin
+namespace NpoiPlugin
 {
     [DebuggerDisplay("{_row}")]
     public class RowImplementation : IRowAbstraction
     {
-        private IXLRow _row;
+        private IRow _row;
 
-        public RowImplementation(IXLRow row)
+        public RowImplementation(IRow row)
         {
             _row = row;
         }
 
         public ICellAbstraction FirstCell()
         {
-            return new CellImplementation(_row.FirstCell());
+            return new CellImplementation(_row.First());
         }
 
         public ICellAbstraction GetCell(int index)
         {
-            var cell = new CellImplementation(_row.Cell(index + 1));
+            var cell = new CellImplementation(_row.GetCell(index));
             return cell;
         }
 
         public IEnumerable<ICellAbstraction> GetCells()
         {
-            var cells = (_row.Cells() as IEnumerable<IXLCell>).Select(x => new CellImplementation(x));
-            return cells;
+            return _row.Cells.Select(x => new CellImplementation(x));
         }
 
         public IEnumerable<ICellAbstraction> GetUsedCells()
         {
-            return _row.CellsUsed().Select(x => new CellImplementation(x));
+            for (var cellIndex = _row.FirstCellNum; cellIndex <= _row.LastCellNum; ++cellIndex)
+            {
+                var cell = _row.GetCell(cellIndex);
+                yield return new CellImplementation(cell);
+            }
         }
 
         public void InsertRowsBelow(int rowsCount)
         {
-            _row.InsertRowsBelow(rowsCount);
+            _row.Sheet.ShiftRows(_row.RowNum + 1, _row.Sheet.LastRowNum, rowsCount);
         }
 
         public void Dispose()

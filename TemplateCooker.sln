@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ClosedXmlPlugin", "ClosedXm
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PluginAbstraction", "Abstractions\PluginAbstraction.csproj", "{721FBB13-F007-4DF6-95D8-4CFB3C9C598B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NpoiPlugin", "NpoiPlugin\NpoiPlugin.csproj", "{035B73AB-6EC1-454B-9536-841780FD090F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{721FBB13-F007-4DF6-95D8-4CFB3C9C598B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{721FBB13-F007-4DF6-95D8-4CFB3C9C598B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{721FBB13-F007-4DF6-95D8-4CFB3C9C598B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{035B73AB-6EC1-454B-9536-841780FD090F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{035B73AB-6EC1-454B-9536-841780FD090F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{035B73AB-6EC1-454B-9536-841780FD090F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{035B73AB-6EC1-454B-9536-841780FD090F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

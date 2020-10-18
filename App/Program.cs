@@ -1,4 +1,5 @@
 ﻿using ClosedXmlPlugin;
+using NpoiPlugin;
 using System;
 using System.Data;
 using System.IO;
@@ -32,7 +33,7 @@ namespace XlsxTemplateReporter
                 Console.WriteLine($"workbook: {file}");
                 using var fileStream = File.Open(file.In, FileMode.Open, FileAccess.Read);
 
-                var templateBuilder = new TemplateBuilder(fileStream, new ClosedXmlPluginImplementation());
+                var templateBuilder = new TemplateBuilder(fileStream, new NpoiPluginImplementation());
                 var markerOptions = new MarkerOptions("{{", ".", "}}");
 
                 //при реальном использование есть необходимость извлечь все маркеры прежде чем двигаться дальше
