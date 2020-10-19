@@ -62,7 +62,7 @@ namespace NpoiPlugin
         private ICell NextCellToBelow(ICell cell, int step)
         {
             var row = cell.Sheet.GetRow(cell.Row.RowNum + step) ?? cell.Sheet.CreateRow(cell.Row.RowNum + step);
-            var outCell = row.GetCell(cell.ColumnIndex)?? row.CreateCell(cell.ColumnIndex);
+            var outCell = row.GetCell(cell.ColumnIndex) ?? row.CreateCell(cell.ColumnIndex);
             return outCell;
         }
 

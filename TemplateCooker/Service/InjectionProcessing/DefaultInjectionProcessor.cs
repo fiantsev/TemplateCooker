@@ -3,12 +3,11 @@ using System.Linq;
 using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Service.InjectionProcessing;
 using TemplateCooker.Service.ResourceInjection;
 
-namespace App
+namespace TemplateCooker.Service.InjectionProcessing
 {
-    public class InjectionProcessor : IInjectionProcessor
+    public class DefaultInjectionProcessor : IInjectionProcessor
     {
         public IEnumerable<InjectionContext> Process(IEnumerable<InjectionContext> injectionContexts)
         {

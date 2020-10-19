@@ -1,5 +1,4 @@
-﻿using App;
-using System;
+﻿using System;
 using System.Data;
 using System.IO;
 using System.Linq;
@@ -19,7 +18,7 @@ namespace XlsxTemplateReporter
                 //"one-marker-merged-cells",
                 //"big-file-untouched",
                 //"one-marker",
-                "tow-markers-on-one-row"
+                "two-markers-on-one-row"
             };
             var files = templates
                 .Select(x => new
@@ -48,9 +47,6 @@ namespace XlsxTemplateReporter
                 {
                     ResourceInjector = resourceInjector,
                     InjectionProvider = injectionProvider,
-                    InjectionProcessor = new InjectionProcessor(),
-                    //InjectionProcessor = new FuncInjectionProcessor(x => x),
-                    
                     MarkerOptions = markerOptions,
                 };
 

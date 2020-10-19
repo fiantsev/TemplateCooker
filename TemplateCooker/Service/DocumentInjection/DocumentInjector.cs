@@ -13,14 +13,13 @@ namespace TemplateCooker
     {
         private readonly IResourceInjector _resourceInjector;
         private readonly IInjectionProvider _injectionProvider;
-        private readonly IInjectionProcessor _injectionProcessor;
+        private readonly IInjectionProcessor _injectionProcessor = new DefaultInjectionProcessor();
         private readonly MarkerOptions _markerOptions;
 
         public DocumentInjector(DocumentInjectorOptions options)
         {
             _resourceInjector = options.ResourceInjector;
             _injectionProvider = options.InjectionProvider;
-            _injectionProcessor = options.InjectionProcessor;
             _markerOptions = options.MarkerOptions;
         }
 
@@ -53,7 +52,8 @@ namespace TemplateCooker
             }
         }
 
-        private IEnumerable<InjectionContext> ProcessInjections(IEnumerable<InjectionContext> injectionContexts) {
+        private IEnumerable<InjectionContext> ProcessInjections(IEnumerable<InjectionContext> injectionContexts)
+        {
             return _injectionProcessor.Process(injectionContexts);
         }
 
