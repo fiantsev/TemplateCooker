@@ -23,8 +23,8 @@ namespace NpoiPlugin
 
         public ICellAbstraction GetCell(int index)
         {
-            var cell = new CellImplementation(_row.GetCell(index));
-            return cell;
+            var cell = _row.GetCell(index) ?? _row.CreateCell(index);
+            return new CellImplementation(cell);
         }
 
         public IEnumerable<ICellAbstraction> GetCells()
@@ -34,9 +34,11 @@ namespace NpoiPlugin
 
         public IEnumerable<ICellAbstraction> GetUsedCells()
         {
+            if (_row.PhysicalNumberOfCells == 0) yield break;
             for (var cellIndex = _row.FirstCellNum; cellIndex <= _row.LastCellNum; ++cellIndex)
             {
                 var cell = _row.GetCell(cellIndex);
+                if (cell == null) continue;
                 yield return new CellImplementation(cell);
             }
         }

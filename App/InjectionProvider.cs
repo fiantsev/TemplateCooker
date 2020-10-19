@@ -15,8 +15,8 @@ namespace XlsxTemplateReporter
             {
                 case "table1":
                     {
-                        var resource = GetResourceObjectStorage()["tableOfObjects"];
-                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
+                        var resource = GetResourceObjectStorage()["tableOfInt"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.None };
 
                     }
                 case "table2":

@@ -20,8 +20,8 @@ namespace NpoiPlugin
 
         public IRowAbstraction GetRow(int index)
         {
-            var row = new RowImplementation(_sheet.GetRow(index));
-            return row;
+            var row = _sheet.GetRow(index) ?? _sheet.CreateRow(index);
+            return new RowImplementation(row);
         }
 
         public IEnumerable<IRowAbstraction> GetRows()
@@ -40,6 +40,7 @@ namespace NpoiPlugin
             for (var rowIndex = _sheet.FirstRowNum; rowIndex <= _sheet.LastRowNum; ++rowIndex)
             {
                 var row = _sheet.GetRow(rowIndex);
+                if (row == null) continue;
                 yield return new RowImplementation(row);
             }
         }

@@ -19,6 +19,7 @@ namespace XlsxTemplateReporter
             {
                 "one-marker-merged-cells",
                 //"big-file-untouched",
+                //"one-marker",
             };
             var files = templates
                 .Select(x => new

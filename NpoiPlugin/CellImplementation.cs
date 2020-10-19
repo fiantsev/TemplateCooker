@@ -31,28 +31,23 @@ namespace NpoiPlugin
                 case long _:
                 case double _:
                     var number = Convert.ToDouble(value);
-                    _cell.SetCellType(NPOI.SS.UserModel.CellType.Numeric);
                     _cell.SetCellValue(number);
                     break;
 
                 case string stringValue:
-                    _cell.SetCellType(NPOI.SS.UserModel.CellType.String);
                     _cell.SetCellValue(stringValue);
                     break;
 
                 case bool boolValue:
-                    _cell.SetCellType(NPOI.SS.UserModel.CellType.Boolean);
                     _cell.SetCellValue(boolValue);
                     break;
 
                 case DateTime dataTimeValue:
-                    _cell.SetCellType(NPOI.SS.UserModel.CellType.Numeric);
                     _cell.SetCellValue(dataTimeValue);
                     break;
 
                 default:
                     var stringifiedValue = value?.ToString() ?? string.Empty;
-                    _cell.SetCellType(NPOI.SS.UserModel.CellType.String);
                     _cell.SetCellValue(stringifiedValue);
                     break;
             }
@@ -65,7 +60,7 @@ namespace NpoiPlugin
 
         public string GetStringValue()
         {
-            return _cell.StringCellValue;
+            return _cell.ToString();
         }
 
         public double GetNumberValue()
