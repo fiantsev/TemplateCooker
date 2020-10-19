@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstractions\PluginAbstraction.csproj" />
+    <ProjectReference Include="..\ClosedXmlPlugin\ClosedXmlPlugin.csproj" />
   </ItemGroup>
 
 </Project>

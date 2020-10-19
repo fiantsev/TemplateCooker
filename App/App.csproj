@@ -10,8 +10,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ClosedXmlPlugin\ClosedXmlPlugin.csproj" />
-    <ProjectReference Include="..\NpoiPlugin\NpoiPlugin.csproj" />
     <ProjectReference Include="..\TemplateCooker\TemplateCooker.csproj" />
   </ItemGroup>
 

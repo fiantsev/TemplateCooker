@@ -47,11 +47,11 @@ namespace ClosedXmlPlugin
                 .MoveTo(sheet.Cell(rowIndex + 1, columnIndex + 1));
         }
 
-        public void SetProperties(bool forceFullCalculation, bool fullCalculationOnLoad, bool recalculateFormulasOnSave)
+        public void SetCustomProperties(CustomProperties customProperties)
         {
-            _workbook.ForceFullCalculation = forceFullCalculation;
-            _workbook.FullCalculationOnLoad = fullCalculationOnLoad;
-            _recalculateFormulasOnSave = recalculateFormulasOnSave;
+            _workbook.ForceFullCalculation = customProperties.WorkbookProperties.ForceFullCalculation;
+            _workbook.FullCalculationOnLoad = customProperties.WorkbookProperties.FullCalculationOnLoad;
+            _recalculateFormulasOnSave = customProperties.RecalculateFormulasOnSave;
         }
 
         public void Save(Stream stream)

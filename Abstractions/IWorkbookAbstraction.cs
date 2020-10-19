@@ -10,7 +10,7 @@ namespace PluginAbstraction
         ISheetAbstraction GetSheet(int index);
         void AddPicture(MemoryStream imageStream, int sheetIndex, int rowIndex, int columnIndex);
 
-        void SetProperties(bool forceFullCalculation, bool fullCalculationOnLoad, bool recalculateFormulasOnSave);
+        void SetCustomProperties(CustomProperties customProperties);
         void Save(Stream stream);
     }
 }

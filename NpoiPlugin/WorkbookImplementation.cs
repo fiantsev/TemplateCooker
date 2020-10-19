@@ -55,7 +55,7 @@ namespace NpoiPlugin
             //    .MoveTo(sheet.Cell(rowIndex + 1, columnIndex + 1));
         }
 
-        public void SetProperties(bool forceFullCalculation, bool fullCalculationOnLoad, bool recalculateFormulasOnSave)
+        public void SetCustomProperties(CustomProperties customProperties)
         {
             //throw new PluginUnsupportedException();
             //_workbook.ForceFullCalculation = forceFullCalculation;

@@ -1,6 +1,4 @@
 ﻿using App;
-using ClosedXmlPlugin;
-using NpoiPlugin;
 using System;
 using System.Data;
 using System.IO;
@@ -8,7 +6,6 @@ using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Builders;
 using TemplateCooker.Service.Creation;
-using TemplateCooker.Service.InjectionProcessing;
 
 namespace XlsxTemplateReporter
 {
@@ -37,7 +34,7 @@ namespace XlsxTemplateReporter
                 Console.WriteLine($"workbook: {file}");
                 using var fileStream = File.Open(file.In, FileMode.Open, FileAccess.Read);
 
-                var templateBuilder = new TemplateBuilder(fileStream, new ClosedXmlPluginImplementation());
+                var templateBuilder = new TemplateBuilder(fileStream);
                 var markerOptions = new MarkerOptions("{{", ".", "}}");
 
                 //при реальном использование есть необходимость извлечь все маркеры прежде чем двигаться дальше

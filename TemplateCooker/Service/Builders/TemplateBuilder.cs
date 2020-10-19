@@ -1,4 +1,5 @@
-﻿using PluginAbstraction;
+﻿using ClosedXmlPlugin;
+using PluginAbstraction;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -14,9 +15,10 @@ namespace TemplateCooker.Service.Builders
         private bool _recalculateFormulasOnBuild;
         private FormulaCalculationOptions _formulaCalculationOptions;
 
-        public TemplateBuilder(Stream workbookStream, IPluginAbstraction plugin)
+        public TemplateBuilder(Stream workbookStream)
         {
             workbookStream.Position = 0;
+            var plugin = new ClosedXmlPluginImplementation();
             _workbook = plugin.OpenWorkbook(workbookStream);
             _formulaCalculationOptions = new FormulaCalculationOptions();
         }
@@ -50,7 +52,16 @@ namespace TemplateCooker.Service.Builders
         public MemoryStream Build()
         {
             var resultStream = new MemoryStream();
-            _workbook.SetProperties(_formulaCalculationOptions.ForceFullCalculation, _formulaCalculationOptions.FullCalculationOnLoad, _recalculateFormulasOnBuild);
+            var customProperties = new CustomProperties
+            {
+                WorkbookProperties = new WorkbookProperties
+                {
+                    ForceFullCalculation = _formulaCalculationOptions.ForceFullCalculation,
+                    FullCalculationOnLoad = _formulaCalculationOptions.FullCalculationOnLoad,
+                },
+                RecalculateFormulasOnSave = _recalculateFormulasOnBuild
+            };
+            _workbook.SetCustomProperties(customProperties);
             _workbook.Save(resultStream);
             resultStream.Position = 0;
 
