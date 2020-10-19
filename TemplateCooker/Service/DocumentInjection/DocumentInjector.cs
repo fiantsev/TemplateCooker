@@ -1,7 +1,9 @@
 ﻿using PluginAbstraction;
+using System.Collections.Generic;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Creation;
 using TemplateCooker.Service.Extraction;
+using TemplateCooker.Service.InjectionProcessing;
 using TemplateCooker.Service.InjectionProviders;
 using TemplateCooker.Service.ResourceInjection;
 
@@ -11,16 +13,25 @@ namespace TemplateCooker
     {
         private readonly IResourceInjector _resourceInjector;
         private readonly IInjectionProvider _injectionProvider;
+        private readonly IInjectionProcessor _injectionProcessor;
         private readonly MarkerOptions _markerOptions;
 
         public DocumentInjector(DocumentInjectorOptions options)
         {
             _resourceInjector = options.ResourceInjector;
             _injectionProvider = options.InjectionProvider;
+            _injectionProcessor = options.InjectionProcessor;
             _markerOptions = options.MarkerOptions;
         }
 
         public void Inject(IWorkbookAbstraction workbook)
+        {
+            var injectionContexts = GenerateInjections(workbook);
+            var processedInjectionContexts = ProcessInjections(injectionContexts);
+            ExecuteInjections(processedInjectionContexts);
+        }
+
+        private IEnumerable<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook)
         {
             foreach (var sheet in workbook.GetSheets())
             {
@@ -29,21 +40,29 @@ namespace TemplateCooker
                 var markerRegions = new MarkerRangeCollection(markers);
 
                 foreach (var markerRegion in markerRegions)
-                    InjectResourceToSheet(workbook, markerRegion);
+                {
+                    var injection = _injectionProvider.Resolve(markerRegion.StartMarker.Id);
+                    var injectionContext = new InjectionContext
+                    {
+                        MarkerRange = markerRegion,
+                        Workbook = workbook,
+                        Injection = injection,
+                    };
+                    yield return injectionContext;
+                }
             }
         }
 
-        private void InjectResourceToSheet(IWorkbookAbstraction workbook, MarkerRange markerRegion)
-        {
-            var injection = _injectionProvider.Resolve(markerRegion.StartMarker.Id);
-            var injectionContext = new InjectionContext
-            {
-                MarkerRange = markerRegion,
-                Workbook = workbook,
-                Injection = injection,
-            };
+        private IEnumerable<InjectionContext> ProcessInjections(IEnumerable<InjectionContext> injectionContexts) {
+            return _injectionProcessor.Process(injectionContexts);
+        }
 
-            _resourceInjector.Inject(injectionContext);
+        private void ExecuteInjections(IEnumerable<InjectionContext> injectionContexts)
+        {
+            foreach (var injectionContext in injectionContexts)
+            {
+                _resourceInjector.Inject(injectionContext);
+            }
         }
     }
 }

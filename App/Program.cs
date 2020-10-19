@@ -1,4 +1,5 @@
-﻿using ClosedXmlPlugin;
+﻿using App;
+using ClosedXmlPlugin;
 using NpoiPlugin;
 using System;
 using System.Data;
@@ -7,6 +8,7 @@ using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Builders;
 using TemplateCooker.Service.Creation;
+using TemplateCooker.Service.InjectionProcessing;
 
 namespace XlsxTemplateReporter
 {
@@ -17,9 +19,10 @@ namespace XlsxTemplateReporter
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var templates = new[]
             {
-                "one-marker-merged-cells",
+                //"one-marker-merged-cells",
                 //"big-file-untouched",
                 //"one-marker",
+                "tow-markers-on-one-row"
             };
             var files = templates
                 .Select(x => new
@@ -34,7 +37,7 @@ namespace XlsxTemplateReporter
                 Console.WriteLine($"workbook: {file}");
                 using var fileStream = File.Open(file.In, FileMode.Open, FileAccess.Read);
 
-                var templateBuilder = new TemplateBuilder(fileStream, new NpoiPluginImplementation());
+                var templateBuilder = new TemplateBuilder(fileStream, new ClosedXmlPluginImplementation());
                 var markerOptions = new MarkerOptions("{{", ".", "}}");
 
                 //при реальном использование есть необходимость извлечь все маркеры прежде чем двигаться дальше
@@ -48,6 +51,9 @@ namespace XlsxTemplateReporter
                 {
                     ResourceInjector = resourceInjector,
                     InjectionProvider = injectionProvider,
+                    InjectionProcessor = new InjectionProcessor(),
+                    //InjectionProcessor = new FuncInjectionProcessor(x => x),
+                    
                     MarkerOptions = markerOptions,
                 };
 

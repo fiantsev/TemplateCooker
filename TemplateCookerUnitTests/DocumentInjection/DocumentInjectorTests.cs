@@ -95,5 +95,38 @@ namespace TemplateCookerUnitTests.DocumentInjection
             var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (0, 0, 0));
             values[0][0].Should().Be("text");
         }
+
+        [Fact]
+        public void Должен_учесть_расположение_двух_маркеров_на_одной_строке_и_сместить_контент_по_максимальным_данным_в_одном_из_маркеров()
+        {
+            //assign
+            var excelHelper = new ExcelHelper();
+            var templatePath = "Assets/Templates/two-markers-on-one-row.xlsx";
+            using var workbook = new WorkbookImplementation(new XLWorkbook(templatePath));
+            var resourceObject = new TableResourceObject(new List<List<object>> {
+                new List<object> { 1 },
+                new List<object> { 2 },
+            });
+            var injection = new TableInjection { Resource = resourceObject, LayoutShift = LayoutShiftType.MoveRows };
+            var documentInjectorOptions = new DocumentInjectorOptions
+            {
+                ResourceInjector = new VariantResourceInjector(),
+                InjectionProvider = new FuncInjectionProvider(_ => injection),
+                MarkerOptions = new MarkerOptions("{", ".", "}"),
+            };
+            var documentInjector = new DocumentInjector(documentInjectorOptions);
+
+            //act
+            documentInjector.Inject(workbook);
+
+            //assert
+            var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (1, 1, 1));
+
+            values[0][0].Should().Be(1);
+            values[1][0].Should().Be(2);
+
+            values[0][1].Should().Be(1);
+            values[1][1].Should().Be(2);
+        }
     }
 }

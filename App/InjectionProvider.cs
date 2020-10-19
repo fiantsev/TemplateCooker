@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.ResourceObjects;
 using TemplateCooker.Service.InjectionProviders;
@@ -16,13 +17,13 @@ namespace XlsxTemplateReporter
                 case "table1":
                     {
                         var resource = GetResourceObjectStorage()["tableOfInt"];
-                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.None };
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
 
                     }
                 case "table2":
                     {
-                        var resource = GetResourceObjectStorage()["tableOfString"];
-                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveCells };
+                        var resource = GetResourceObjectStorage()["tableOfIntX3"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
 
                     }
                 case "table3":
@@ -57,6 +58,8 @@ namespace XlsxTemplateReporter
                 new List<object> { 7, 8, 9 },
             };
 
+            var tableOfIntX3 = tableOfInt.Concat(tableOfInt).Concat(tableOfInt).ToList();
+
             var tableOfString = new List<List<object>>
             {
                 new List<object> { "1", "2", "3" },
@@ -74,6 +77,7 @@ namespace XlsxTemplateReporter
                 { nameof(tableOfInt), new TableResourceObject(tableOfInt) },
                 { nameof(tableOfString), new TableResourceObject(tableOfString) },
                 { nameof(tableOfObjects), new TableResourceObject(tableOfObjects) },
+                { nameof(tableOfIntX3), new TableResourceObject(tableOfIntX3) },
             };
 
 
