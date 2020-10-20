@@ -5,6 +5,6 @@ namespace TemplateCooker.Service.InjectionProcessing
 {
     public interface IInjectionProcessor
     {
-        IEnumerable<InjectionContext> Process(IEnumerable<InjectionContext> injectionContexts);
+        IEnumerable<InjectionContext> Process(IEnumerable<InjectionContext> originalInjectionContextStream);
     }
 }

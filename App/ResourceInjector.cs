@@ -13,7 +13,7 @@ namespace XlsxTemplateReporter
             var injection = context.Injection;
 
             Console.WriteLine($"sheet: {sheet.SheetName}");
-            Console.WriteLine($"region: marker {{{{{region.StartMarker.Id}}}}} from [{region.StartMarker.Position.RowIndex};{region.StartMarker.Position.ColumnIndex}] to [{region.EndMarker.Position.RowIndex};{region.EndMarker.Position.RowIndex}]");
+            Console.WriteLine($"region: marker {{{{{region.StartMarker.Id}}}}} from [{region.StartMarker.Position.RowIndex};{region.StartMarker.Position.ColumnIndex}] to [{region.StartMarker.Position.RowIndex};{region.StartMarker.Position.RowIndex}]");
             Console.WriteLine($"resourceObject: {injection.GetType().Name}");
 
             new VariantResourceInjector().Inject(context);

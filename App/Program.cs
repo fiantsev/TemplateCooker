@@ -18,7 +18,9 @@ namespace XlsxTemplateReporter
                 //"one-marker-merged-cells",
                 //"big-file-untouched",
                 //"one-marker",
-                "two-markers-on-one-row"
+                "two-markers-on-one-column",
+                "two-markers-on-one-column-v2",
+                "marker-field",
             };
             var files = templates
                 .Select(x => new

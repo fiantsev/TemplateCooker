@@ -1,5 +1,6 @@
 ﻿using PluginAbstraction;
 using System.Collections.Generic;
+using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Creation;
 using TemplateCooker.Service.Extraction;
@@ -13,7 +14,7 @@ namespace TemplateCooker
     {
         private readonly IResourceInjector _resourceInjector;
         private readonly IInjectionProvider _injectionProvider;
-        private readonly IInjectionProcessor _injectionProcessor = new DefaultInjectionProcessor();
+        private readonly IInjectionProcessor _injectionProcessor = new TableLayoutShiftProcessor();
         private readonly MarkerOptions _markerOptions;
 
         public DocumentInjector(DocumentInjectorOptions options)
@@ -30,26 +31,22 @@ namespace TemplateCooker
             ExecuteInjections(processedInjectionContexts);
         }
 
-        private IEnumerable<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook)
+        private List<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook)
         {
-            foreach (var sheet in workbook.GetSheets())
-            {
-                var markerExtractor = new MarkerExtractor(sheet, _markerOptions);
-                var markers = markerExtractor.GetMarkers();
-                var markerRegions = new MarkerRangeCollection(markers);
+            var markers = workbook.GetSheets()
+                .SelectMany(sheet => new MarkerExtractor(sheet, _markerOptions).GetMarkers());
 
-                foreach (var markerRegion in markerRegions)
+            var markerRanges = new MarkerRangeCollection(markers);
+
+            var injections = markerRanges
+                .Select(markerRange => new InjectionContext
                 {
-                    var injection = _injectionProvider.Resolve(markerRegion.StartMarker.Id);
-                    var injectionContext = new InjectionContext
-                    {
-                        MarkerRange = markerRegion,
-                        Workbook = workbook,
-                        Injection = injection,
-                    };
-                    yield return injectionContext;
-                }
-            }
+                    MarkerRange = markerRange,
+                    Injection = _injectionProvider.Resolve(markerRange.StartMarker.Id),
+                    Workbook = workbook
+                });
+
+            return injections.ToList();
         }
 
         private IEnumerable<InjectionContext> ProcessInjections(IEnumerable<InjectionContext> injectionContexts)
@@ -60,9 +57,7 @@ namespace TemplateCooker
         private void ExecuteInjections(IEnumerable<InjectionContext> injectionContexts)
         {
             foreach (var injectionContext in injectionContexts)
-            {
                 _resourceInjector.Inject(injectionContext);
-            }
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace TemplateCooker.Domain.Markers
 {
+    [DebuggerDisplay("SRC({SheetIndex},{RowIndex},{ColumnIndex})")]
     public class MarkerPosition : IEquatable<MarkerPosition>
     {
         public int SheetIndex { get; set; }

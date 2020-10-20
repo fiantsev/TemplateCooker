@@ -5,7 +5,20 @@ namespace TemplateCooker.Domain.Markers
     public class MarkerRange
     {
         public Marker StartMarker { get; }
-        public Marker EndMarker { get; }
+
+        private Marker _EndMarker;
+        public Marker EndMarker
+        {
+            get
+            {
+                throw new Exception("Using EndMarker is unsupported and therefore denied for now. It will be activated in the upcoming versions");
+            }
+
+            private set
+            {
+                _EndMarker = value;
+            }
+        }
         public bool Collapsed { get; }
 
         public MarkerRange(Marker startMarker, Marker endMarker = null)
