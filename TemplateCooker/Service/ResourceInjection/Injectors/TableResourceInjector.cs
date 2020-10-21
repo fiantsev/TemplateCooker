@@ -23,9 +23,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                 case LayoutShiftType.None:
                     return;
                 case LayoutShiftType.MoveRows:
-                    var countOfRowsToInsert = table.Count > 1
-                        ? table.Count - 1 //-1 потому что одна ячейка уже есть, та в которой находиться сам маркер
-                        : 0;
+                    var countOfRowsToInsert = injection.СountOfRowsToInsert;
                     if (countOfRowsToInsert != 0)
                         injectionContext.Workbook
                             .GetSheet(markerRange.StartMarker.Position.SheetIndex)

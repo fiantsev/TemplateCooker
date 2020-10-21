@@ -10,7 +10,6 @@ namespace TemplateCooker.Service.InjectionProcessing
 {
     public class TableLayoutShiftProcessor : IInjectionProcessor
     {
-        //private LayoutShiftProcessor _layoutShiftProcessor = new LayoutShiftProcessor();
         //используется только здесь
         class MarkerGroupOnOneRow
         {
@@ -35,7 +34,6 @@ namespace TemplateCooker.Service.InjectionProcessing
         /// Для всех таких маркеров, кроме первого, убираем необходимость смещать контент.
         /// И при этом первому выставляем количетсво элементов к смещению = максимальному количество данных пришедших в данной группе маркеров
         /// </summary>
-        /// <param name="injectionContexts"></param>
         private IEnumerable<InjectionContext> SynchronizeLayoutShifts(
             IEnumerable<InjectionContext> injectionContextStream,
             out List<LayoutShift> layoutShifts
@@ -76,10 +74,24 @@ namespace TemplateCooker.Service.InjectionProcessing
 
             oneMarkerGroups.ForEach(tableInjectionOnRow =>
                 {
+                    HandleRestOfItemsWithLayoutShift(injectionContextStream, tableInjectionOnRow);
+                    var singleInjectionInTheGroup = tableInjectionOnRow.Single();
+
+                    var shiftAmount = singleInjectionInTheGroup.TableInjection.Resource.Object.Count > 0
+                    ? singleInjectionInTheGroup.TableInjection.Resource.Object.Count - 1
+                    : 0;
+
+                    var firstInjectionInTheRow = injectionContextStream.First(cached => true
+                        && cached.MarkerRange.StartMarker.Position.SheetIndex == singleInjectionInTheGroup.StartMarkerPosition.SheetIndex
+                        && cached.MarkerRange.StartMarker.Position.RowIndex == singleInjectionInTheGroup.StartMarkerPosition.RowIndex
+                    );
+
+                    ((TableInjection)firstInjectionInTheRow.Injection).LayoutShift = LayoutShiftType.MoveRows;
+                    ((TableInjection)firstInjectionInTheRow.Injection).СountOfRowsToInsert = shiftAmount;
                     localLayoutShifts.Add(new RowLayoutShift
                     {
-                        OriginPosition = tableInjectionOnRow.Single().StartMarkerPosition,
-                        Amount = tableInjectionOnRow.Single().TableInjection.Resource.Object.Count - 1
+                        OriginPosition = firstInjectionInTheRow.MarkerRange.StartMarker.Clone().Position,
+                        Amount = shiftAmount
                     });
                 });
 
@@ -90,36 +102,42 @@ namespace TemplateCooker.Service.InjectionProcessing
 
             severalMarkerGroups.ForEach(group =>
                 {
+                    HandleRestOfItemsWithLayoutShift(injectionContextStream, group);
                     var layoutShiftForGroup = HandleFirstItemWithLayoutShift(injectionContextStream, group);
                     localLayoutShifts.Add(layoutShiftForGroup);
-                    HandleRestOfItemsWithLayoutShift(injectionContextStream, group);
                 });
 
             layoutShifts = localLayoutShifts;
             return cachedInjectionContexts;
         }
 
-        private void AddEmptyRows(List<List<object>> table, int count)
-        {
-            var addition = Enumerable.Repeat(Enumerable.Repeat(string.Empty, table[0].Count).Cast<object>().ToList(), count);
-            table.AddRange(addition);
-        }
-
         //для первого маркера в группе добавляем пустые строки (по максимальному количеству строк в группе)
         private LayoutShift HandleFirstItemWithLayoutShift(
             IEnumerable<InjectionContext> originalInjectionContextStream,
-            IEnumerable<MarkerGroupOnOneRow> markerGroupOnOneRow
+            IGrouping<MarkerPosition, MarkerGroupOnOneRow> markerGroupOnOneRow
         )
         {
+            var sheetIndex = markerGroupOnOneRow.Key.SheetIndex;
+            var rowIndex = markerGroupOnOneRow.Key.RowIndex;
+
             var groupMaxDataRowCount = markerGroupOnOneRow.Max(x => x.TableInjection.Resource.Object.Count);
-            var firstInjectionByOriginalOrder = originalInjectionContextStream.First(x => markerGroupOnOneRow.Any(g => g.InjectionGuid == x.Guid));
-            var firstTableObject = ((TableInjection)firstInjectionByOriginalOrder.Injection).Resource.Object;
-            var countOfEmptyStringShouldBeAdded = groupMaxDataRowCount - firstTableObject.Count;
-            AddEmptyRows(firstTableObject, countOfEmptyStringShouldBeAdded);
+            var shiftAmount = groupMaxDataRowCount > 1
+                ? groupMaxDataRowCount - 1
+                : 0;
+
+            var firstInjectionInTheRow = originalInjectionContextStream.First(inj => true
+                && inj.MarkerRange.StartMarker.Position.SheetIndex == sheetIndex
+                && inj.MarkerRange.StartMarker.Position.RowIndex == rowIndex
+            );
+
+            var tableInjectionWithRowsShifted = ((TableInjection)firstInjectionInTheRow.Injection);
+            tableInjectionWithRowsShifted.LayoutShift = LayoutShiftType.MoveRows;
+            tableInjectionWithRowsShifted.СountOfRowsToInsert = shiftAmount;
+
             return new RowLayoutShift
             {
-                Amount = groupMaxDataRowCount - 1,
-                OriginPosition = firstInjectionByOriginalOrder.MarkerRange.StartMarker.Clone().Position
+                Amount = shiftAmount,
+                OriginPosition = firstInjectionInTheRow.MarkerRange.StartMarker.Clone().Position
             };
         }
 
@@ -129,13 +147,10 @@ namespace TemplateCooker.Service.InjectionProcessing
             IEnumerable<MarkerGroupOnOneRow> markerGroupOnOneRow
         )
         {
-            var firstInjectionByOriginalOrder = originalInjectionContextStream.First(x => markerGroupOnOneRow.Any(g => g.InjectionGuid == x.Guid));
             markerGroupOnOneRow
-                .Where(x => x.InjectionGuid != firstInjectionByOriginalOrder.Guid)
                 .Select(x => originalInjectionContextStream.First(cached => cached.Guid == x.InjectionGuid))
                 .ToList()
                 .ForEach(x => (x.Injection as TableInjection).LayoutShift = LayoutShiftType.None);
-
         }
     }
 }

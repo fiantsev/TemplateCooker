@@ -15,12 +15,15 @@ namespace XlsxTemplateReporter
             Console.OutputEncoding = System.Text.Encoding.UTF8;
             var templates = new[]
             {
+                //"marker-cross",
+                //"marker-field",
+                //"marker-x-cross",
                 //"one-marker-merged-cells",
-                //"big-file-untouched",
-                //"one-marker",
-                "two-markers-on-one-column",
-                "two-markers-on-one-column-v2",
-                "marker-field",
+                //"three-markers-on-one-row-one-marker-wo-rows-shift",
+                //"two-markers-on-one-row-one-marker-wo-rows-shift",
+                //"two-markers-on-one-column",
+                //"two-markers-on-one-row",
+                "one-marker",
             };
             var files = templates
                 .Select(x => new
