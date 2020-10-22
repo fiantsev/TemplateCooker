@@ -4,19 +4,19 @@ using System.Diagnostics;
 
 namespace TemplateCooker.Domain.Layout
 {
-    [DebuggerDisplay("RcDimensions({RowIndex},{ColumnIndex})")]
+    [DebuggerDisplay("RcDimensions({Height},{Width})")]
     public class RcDimensions : IEquatable<RcDimensions>
     {
-        public int Width { get; }
         public int Height { get; }
+        public int Width { get; }
 
-        public RcDimensions(int width, int height)
+        public RcDimensions(int height, int width)
         {
-            if (width < 0) throw new ArgumentException($"{nameof(width)} should be positive number");
-            if (height < 0) throw new ArgumentException($"{nameof(height)} should be positive number");
+            if (height < 1) throw new ArgumentException($"{nameof(height)} should be greater than 1");
+            if (width < 1) throw new ArgumentException($"{nameof(width)} should be greater than 1");
 
-            Width = width;
             Height = height;
+            Width = width;
         }
 
 

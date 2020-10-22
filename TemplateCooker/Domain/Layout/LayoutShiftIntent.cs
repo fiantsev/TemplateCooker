@@ -5,13 +5,13 @@ namespace TemplateCooker.Domain.Layout
 {
     public class LayoutShiftIntent
     {
-        public LayoutShiftIntent(LayoutShiftOrigin origin, LayoutShiftType type)
+        public LayoutShiftIntent(LayoutElement layoutElement, LayoutShiftType type)
         {
-            Origin = origin ?? throw new ArgumentNullException(nameof(origin));
+            LayoutElement = layoutElement ?? throw new ArgumentNullException(nameof(layoutElement));
             Type = type;
         }
 
-        public LayoutShiftOrigin Origin { get; }
+        public LayoutElement LayoutElement { get; }
         public LayoutShiftType Type { get; }
     }
 }
