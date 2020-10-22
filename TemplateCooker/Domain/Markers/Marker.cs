@@ -1,9 +1,11 @@
-﻿namespace TemplateCooker.Domain.Markers
+﻿using TemplateCooker.Domain.Layout;
+
+namespace TemplateCooker.Domain.Markers
 {
     public class Marker
     {
         public string Id { get; set; }
-        public MarkerPosition Position { get; set; }
+        public SrcPosition Position { get; set; }
         public MarkerType MarkerType { get; set; }
 
         public Marker Clone()
@@ -12,12 +14,7 @@
             {
                 Id = Id,
                 MarkerType = MarkerType,
-                Position = new MarkerPosition
-                {
-                    SheetIndex = Position.SheetIndex,
-                    RowIndex = Position.RowIndex,
-                    ColumnIndex = Position.ColumnIndex,
-                }
+                Position = new SrcPosition(Position.SheetIndex, Position.RowIndex, Position.ColumnIndex)
             };
         }
 

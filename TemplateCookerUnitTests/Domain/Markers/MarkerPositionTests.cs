@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using TemplateCooker.Domain.Markers;
+using TemplateCooker.Domain.Layout;
 using Xunit;
 
 namespace TemplateCookerUnitTests.Domain.Markers
@@ -10,8 +10,8 @@ namespace TemplateCookerUnitTests.Domain.Markers
         public void MarkerPosition_должены_быть_равны_если_все_внутрение_свойства_одинаковые()
         {
             //assign
-            var markerPosition1 = new MarkerPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0 };
-            var markerPosition2 = new MarkerPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0 };
+            var markerPosition1 = new SrcPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0 };
+            var markerPosition2 = new SrcPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0 };
 
             //act
             //assert
@@ -25,8 +25,8 @@ namespace TemplateCookerUnitTests.Domain.Markers
         public void MarkerPosition_должены_быть_разные_если_внутрение_свойства_различаются()
         {
             //assign
-            var markerPosition1 = new MarkerPosition { SheetIndex = 1, RowIndex = 0, ColumnIndex = 0 };
-            var markerPosition2 = new MarkerPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0 };
+            var markerPosition1 = new SrcPosition { SheetIndex = 1, RowIndex = 0, ColumnIndex = 0 };
+            var markerPosition2 = new SrcPosition { SheetIndex = 0, RowIndex = 0, ColumnIndex = 0 };
 
             //act
             //assert

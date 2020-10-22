@@ -4,7 +4,6 @@ using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Creation;
 using TemplateCooker.Service.Extraction;
-using TemplateCooker.Service.InjectionProcessing;
 using TemplateCooker.Service.InjectionProviders;
 using TemplateCooker.Service.ResourceInjection;
 
@@ -14,7 +13,7 @@ namespace TemplateCooker
     {
         private readonly IResourceInjector _resourceInjector;
         private readonly IInjectionProvider _injectionProvider;
-        private readonly IInjectionProcessor _injectionProcessor = new TableLayoutShiftProcessor();
+        //private readonly IInjectionProcessor _injectionProcessor = new TableLayoutShiftProcessor();
         private readonly MarkerOptions _markerOptions;
 
         public DocumentInjector(DocumentInjectorOptions options)
@@ -51,7 +50,8 @@ namespace TemplateCooker
 
         private IEnumerable<InjectionContext> ProcessInjections(IEnumerable<InjectionContext> injectionContexts)
         {
-            return _injectionProcessor.Process(injectionContexts);
+            return injectionContexts;
+            //return _injectionProcessor.Process(injectionContexts);
         }
 
         private void ExecuteInjections(IEnumerable<InjectionContext> injectionContexts)

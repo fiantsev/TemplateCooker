@@ -1,6 +1,7 @@
 ﻿using PluginAbstraction;
 using System.Collections;
 using System.Collections.Generic;
+using TemplateCooker.Domain.Layout;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Utils;
 
@@ -51,12 +52,7 @@ namespace TemplateCooker.Service.Extraction
                             Id = isEndMarker
                                 ? markerId.Substring(_markerOptions.Terminator.Length)
                                 : markerId,
-                            Position = new MarkerPosition
-                            {
-                                SheetIndex = sheet.SheetIndex,
-                                RowIndex = row.FirstCell().RowIndex,
-                                ColumnIndex = cell.ColumnIndex
-                            },
+                            Position = new SrcPosition(sheet.SheetIndex, row.FirstCell().RowIndex, cell.ColumnIndex),
                             MarkerType = isEndMarker ? MarkerType.End : MarkerType.Start
                         };
                         yield return marker;
