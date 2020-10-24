@@ -57,7 +57,7 @@ namespace XlsxTemplateReporter
 
                 var documentStream = templateBuilder
                     .InjectData(documentInjectorOptions)
-                    .SetupFormulaCalculations(new FormulaCalculationOptions { ForceFullCalculation = true, FullCalculationOnLoad = true })
+                    .SetupFormulaCalculations(forceFullCalculation:true, fullCalculationOnLoad: true)
                     .RecalculateFormulasOnBuild(false)
                     .Build();
 

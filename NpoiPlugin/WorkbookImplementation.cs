@@ -72,5 +72,10 @@ namespace NpoiPlugin
         {
             _workbook.Close();
         }
+
+        public ISheetAbstraction AddSheet(string name)
+        {
+            return new SheetImplementation(_workbook.CreateSheet(name));
+        }
     }
 }

@@ -2,10 +2,10 @@
 using PluginAbstraction;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using TemplateCooker.Domain.Markers;
+using TemplateCooker.Recipes.Read;
+using TemplateCooker.Recipes.Update;
 using TemplateCooker.Service.Creation;
-using TemplateCooker.Service.Extraction;
 
 namespace TemplateCooker.Service.Builders
 {
@@ -13,26 +13,36 @@ namespace TemplateCooker.Service.Builders
     {
         private IWorkbookAbstraction _workbook;
         private bool _recalculateFormulasOnBuild;
-        private FormulaCalculationOptions _formulaCalculationOptions;
+        private bool _forceFullCalculation;
+        private bool _fullCalculationOnLoad;
 
         public TemplateBuilder(Stream workbookStream)
         {
             workbookStream.Position = 0;
             var plugin = new ClosedXmlPluginImplementation();
             _workbook = plugin.OpenWorkbook(workbookStream);
-            _formulaCalculationOptions = new FormulaCalculationOptions();
         }
 
         public List<Marker> ReadMarkers(MarkerOptions markerOptions)
         {
-            var markerExtractor = new MarkerExtractor(_workbook, markerOptions);
-            return markerExtractor.GetMarkers().ToList();
+            var markers = new ExtractMarkersRecipe(new ExtractMarkersRecipe.Options
+            {
+                MarkerOptions = markerOptions,
+                Workbook = _workbook
+            }).Cook();
+
+            return markers;
         }
 
         public TemplateBuilder InjectData(DocumentInjectorOptions options)
         {
-            var documentInjector = new DocumentInjector(options);
-            documentInjector.Inject(_workbook);
+            new InjectRecipe(new InjectRecipe.Options
+            {
+                Workbook = _workbook,
+                MarkerOptions = options.MarkerOptions,
+                InjectionProvider = options.InjectionProvider,
+                ResourceInjector = options.ResourceInjector,
+            }).Cook();
 
             return this;
         }
@@ -43,9 +53,10 @@ namespace TemplateCooker.Service.Builders
             return this;
         }
 
-        public TemplateBuilder SetupFormulaCalculations(FormulaCalculationOptions formulaCalculationOptions)
+        public TemplateBuilder SetupFormulaCalculations(bool forceFullCalculation, bool fullCalculationOnLoad)
         {
-            _formulaCalculationOptions = formulaCalculationOptions;
+            _forceFullCalculation = forceFullCalculation;
+            _fullCalculationOnLoad = fullCalculationOnLoad;
             return this;
         }
 
@@ -56,8 +67,8 @@ namespace TemplateCooker.Service.Builders
             {
                 WorkbookProperties = new WorkbookProperties
                 {
-                    ForceFullCalculation = _formulaCalculationOptions.ForceFullCalculation,
-                    FullCalculationOnLoad = _formulaCalculationOptions.FullCalculationOnLoad,
+                    ForceFullCalculation = _forceFullCalculation,
+                    FullCalculationOnLoad = _fullCalculationOnLoad,
                 },
                 RecalculateFormulasOnSave = _recalculateFormulasOnBuild
             };
