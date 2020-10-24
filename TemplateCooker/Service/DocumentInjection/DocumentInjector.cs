@@ -5,6 +5,7 @@ using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Creation;
 using TemplateCooker.Service.Extraction;
 using TemplateCooker.Service.InjectionProviders;
+using TemplateCooker.Service.Layout;
 using TemplateCooker.Service.ResourceInjection;
 
 namespace TemplateCooker
@@ -13,7 +14,6 @@ namespace TemplateCooker
     {
         private readonly IResourceInjector _resourceInjector;
         private readonly IInjectionProvider _injectionProvider;
-        //private readonly IInjectionProcessor _injectionProcessor = new TableLayoutShiftProcessor();
         private readonly MarkerOptions _markerOptions;
 
         public DocumentInjector(DocumentInjectorOptions options)
@@ -25,15 +25,17 @@ namespace TemplateCooker
 
         public void Inject(IWorkbookAbstraction workbook)
         {
-            var injectionContexts = GenerateInjections(workbook);
-            var processedInjectionContexts = ProcessInjections(injectionContexts);
-            ExecuteInjections(processedInjectionContexts);
+            foreach (var sheet in workbook.GetSheets())
+            {
+                var injectionContexts = GenerateInjections(workbook, sheet);
+                var processedInjectionContexts = ProcessInjections(injectionContexts);
+                ExecuteInjections(processedInjectionContexts);
+            }
         }
 
-        private List<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook)
+        private List<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook, ISheetAbstraction sheet)
         {
-            var markers = workbook.GetSheets()
-                .SelectMany(sheet => new MarkerExtractor(sheet, _markerOptions).GetMarkers());
+            var markers = new MarkerExtractor(sheet, _markerOptions).GetMarkers();
 
             var markerRanges = new MarkerRangeCollection(markers);
 
@@ -48,13 +50,12 @@ namespace TemplateCooker
             return injections.ToList();
         }
 
-        private IEnumerable<InjectionContext> ProcessInjections(IEnumerable<InjectionContext> injectionContexts)
+        private List<InjectionContext> ProcessInjections(List<InjectionContext> injectionContexts)
         {
-            return injectionContexts;
-            //return _injectionProcessor.Process(injectionContexts);
+            return new LayoutService().ProcessLayout(injectionContexts);
         }
 
-        private void ExecuteInjections(IEnumerable<InjectionContext> injectionContexts)
+        private void ExecuteInjections(List<InjectionContext> injectionContexts)
         {
             foreach (var injectionContext in injectionContexts)
                 _resourceInjector.Inject(injectionContext);

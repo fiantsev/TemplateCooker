@@ -1,6 +1,5 @@
 ﻿using System;
 using TemplateCooker.Domain.Injections;
-using TemplateCooker.Domain.ResourceObjects;
 
 namespace TemplateCooker.Service.ResourceInjection.Injectors
 {
@@ -8,34 +7,8 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
     {
         public Action<InjectionContext> Inject => (InjectionContext injectionContext) =>
         {
-            ShiftLayout(injectionContext);
             InsertTable(injectionContext);
         };
-
-        private void ShiftLayout(InjectionContext injectionContext)
-        {
-            var markerRange = injectionContext.MarkerRange;
-            var injection = (injectionContext.Injection as TableInjection);
-            var table = injection.Resource.Object;
-
-            switch (injection.LayoutShift)
-            {
-                case LayoutShiftType.None:
-                    return;
-                case LayoutShiftType.MoveRows:
-                    var countOfRowsToInsert = injection.СountOfRowsToInsert;
-                    if (countOfRowsToInsert != 0)
-                        injectionContext.Workbook
-                            .GetSheet(markerRange.StartMarker.Position.SheetIndex)
-                            .GetRow(markerRange.StartMarker.Position.RowIndex)
-                            .InsertRowsBelow(countOfRowsToInsert);
-                    return;
-                case LayoutShiftType.MoveCells:
-                    throw new Exception("Unsupported");
-                default:
-                    throw new Exception($"Unhandled case: {nameof(injection.LayoutShift)}={injection.LayoutShift.ToString()}");
-            }
-        }
 
         private void InsertTable(InjectionContext injectionContext)
         {

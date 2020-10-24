@@ -2,14 +2,11 @@
 {
     public class EmptyRowsInjection : Injection
     {
+        public EmptyRowsInjection(int rowsCount)
+        {
+            RowsCount = rowsCount;
+        }
+
         public int RowsCount { get; set; }
-        //public TableResourceObject Resource { get; set; }
-
-        //public LayoutShiftType LayoutShift { get; set; }
-
-        ///// <summary>
-        ///// HACK: переделать механизм
-        ///// </summary>
-        //public int СountOfRowsToInsert { get; set; } = 0;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.Layout;
+using TemplateCooker.Domain.Markers;
 using TemplateCooker.Domain.ResourceObjects;
 using TemplateCooker.Service.ResourceInjection;
 
@@ -13,7 +14,7 @@ namespace TemplateCooker.Service.Layout
         class LayoutShift
         {
             public LayoutShiftIntent Intent { get; set; }
-            public InjectionContext InjectionInitiator { get; set; }
+            public InjectionContext Item { get; set; }
         }
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace TemplateCooker.Service.Layout
                             return new LayoutShiftIntent(new LayoutElement(rcPosition, new RcDimensions(1, 1)), LayoutShiftType.None);
                     }
                 })
-                .Select(x => new LayoutShift { Intent = x.Value, InjectionInitiator = x.Key })
+                .Select(x => new LayoutShift { Intent = x.Value, Item = x.Key })
                 .ToList();
         }
 
@@ -66,33 +67,31 @@ namespace TemplateCooker.Service.Layout
         {
             var outputStream = new List<InjectionContext>();
 
+            //HACK
+            var sheetIndex = layoutShifts.FirstOrDefault()?.Item.MarkerRange.StartMarker.Position.SheetIndex ?? 0;
+            var workbook = layoutShifts.FirstOrDefault()?.Item.Workbook;
 
-            var moveRows = layoutShifts
-                .Where(x => x.Intent.Type == LayoutShiftType.MoveRows);
+            layoutShifts
+                .GroupBy(x => x.Intent.LayoutElement.TopLeft.RowIndex)
+                .ToList()
+                .ForEach(rowGroup =>
+                {
+                    var rowIndex = rowGroup.Key;
 
-            var moveCells = layoutShifts
-                .Where(x => x.Intent.Type == LayoutShiftType.MoveCells);
+                    var withRowShiftIntent = rowGroup.Where(x => x.Intent.Type == LayoutShiftType.MoveRows).ToList();
 
-            //layoutMappings
-            //    .Select(x => new
-            //    {
-            //        //OutputStream = outputStream,
-            //        InjectionContext = x.Key,
-            //        LayoutShiftIntent = x.Value,
-            //    })
-            //    .ToList()
-            //    .ForEach(x =>
-            //    {
+                    var maxAreaHeight = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
+                    var markerRange = new MarkerRange(new Marker { MarkerType = MarkerType.Start, Position = new SrcPosition(sheetIndex, rowIndex, 0) });
 
-            //    });
-            //var s1 = layoutMappings.ToList();
-            //var s2 = s1.
+                    var rowShiftInjection = withRowShiftIntent.Count == 0 || maxAreaHeight == 0
+                        ? new InjectionContext { Injection = new NoopInjection(), MarkerRange = markerRange, Workbook = workbook }
+                        : new InjectionContext { Injection = new EmptyRowsInjection(maxAreaHeight), MarkerRange = markerRange, Workbook = workbook };
+
+                    outputStream.Add(rowShiftInjection);
+                    outputStream.AddRange(rowGroup.Select(x => x.Item));
+                });
+
+            return outputStream;
         }
-
-        private void ProcessMoveRows()
-        {
-
-        }
-
     }
 }

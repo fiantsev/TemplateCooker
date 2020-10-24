@@ -18,6 +18,12 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                 case TextInjection _:
                     new TextResourceInjector().Inject(context);
                     break;
+                case EmptyRowsInjection _:
+                    new EmptyRowsInjector().Inject(context);
+                    break;
+                case NoopInjection _:
+                    new NoopInjector().Inject(context);
+                    break;
                 default:
                     throw new Exception($"Неизвестный тип объекта экспорта: {context.Injection?.GetType().Name}");
             }
