@@ -24,13 +24,13 @@ namespace TemplateCooker.Service.Layout
         {
             if (contexts.Select(x => x.MarkerRange.StartMarker.Position.SheetIndex).Distinct().Count() > 1)
                 throw new Exception("инъекции должны приходить по одному листу");
-            var s1 = ExtractLayoutIntents(contexts);
+            var s1 = ExtractLayoutShiftIntents(contexts);
             var s2 = InnerProcessLayout(s1);
             return s2;
         }
 
         //one-to-one mapping should be preserved
-        private List<LayoutShift> ExtractLayoutIntents(List<InjectionContext> contexts)
+        private List<LayoutShift> ExtractLayoutShiftIntents(List<InjectionContext> contexts)
         {
             return contexts.ToDictionary(context => context, context =>
                 {
@@ -83,12 +83,20 @@ namespace TemplateCooker.Service.Layout
                     var maxAreaHeight = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
                     var markerRange = new MarkerRange(new Marker { MarkerType = MarkerType.Start, Position = new SrcPosition(sheetIndex, rowIndex, 0) });
 
-                    var rowShiftInjection = withRowShiftIntent.Count == 0 || maxAreaHeight == 0
-                        ? new InjectionContext { Injection = new NoopInjection(), MarkerRange = markerRange, Workbook = workbook }
-                        : new InjectionContext { Injection = new EmptyRowsInjection(maxAreaHeight), MarkerRange = markerRange, Workbook = workbook };
+                    var reallyNeedRowShiftInjection = withRowShiftIntent.Count == 0 || maxAreaHeight == 0;
 
-                    outputStream.Add(rowShiftInjection);
-                    outputStream.AddRange(rowGroup.Select(x => x.Item));
+                    if (reallyNeedRowShiftInjection)
+                    {
+                        var rowShiftInjection = new InjectionContext { Injection = new EmptyRowsInjection(maxAreaHeight), MarkerRange = markerRange, Workbook = workbook };
+
+                        outputStream.Add(rowShiftInjection);
+                        outputStream.AddRange(rowGroup.Select(x => x.Item));
+                        outputStream.Add(new InjectionContext { Injection = new ExtendFormulasDownInjection { SheetIndex = sheetIndex, FromRowIndex = rowIndex, ToRowIndex = rowIndex + maxAreaHeight }, MarkerRange = markerRange, Workbook = workbook });
+                    }
+                    else
+                    {
+                        outputStream.AddRange(rowGroup.Select(x => x.Item));
+                    }
                 });
 
             return outputStream;

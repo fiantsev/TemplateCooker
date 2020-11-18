@@ -87,5 +87,10 @@ namespace NpoiPlugin
         public void Dispose()
         {
         }
+
+        public void Copy(ICellAbstraction cell)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
