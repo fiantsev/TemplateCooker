@@ -5,7 +5,6 @@ using System.IO;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Recipes.Read;
 using TemplateCooker.Recipes.Update;
-using TemplateCooker.Service.Creation;
 
 namespace TemplateCooker.Service.Builders
 {
@@ -34,7 +33,7 @@ namespace TemplateCooker.Service.Builders
             return markers;
         }
 
-        public TemplateBuilder InjectData(DocumentInjectorOptions options)
+        public TemplateBuilder InjectData(InjectRecipe.Options options)
         {
             new InjectRecipe(new InjectRecipe.Options
             {

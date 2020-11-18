@@ -7,7 +7,7 @@ using TemplateCooker;
 using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Service.Creation;
+using TemplateCooker.Recipes.Update;
 using TemplateCooker.Service.InjectionProviders;
 using TemplateCooker.Service.ResourceInjection.Injectors;
 using TemplateCookerUnitTests._Helpers;
@@ -29,16 +29,17 @@ namespace TemplateCookerUnitTests.DocumentInjection
                 new List<object> { 3, 4 },
             });
             var injection = new TableInjection { Resource = resourceObject, LayoutShift = LayoutShiftType.None };
-            var documentInjectorOptions = new DocumentInjectorOptions
+            var documentInjectorOptions = new InjectRecipe.Options
             {
                 ResourceInjector = new VariantResourceInjector(),
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
+                Workbook = workbook,
             };
-            var documentInjector = new DocumentInjector(documentInjectorOptions);
+            var documentInjector = new InjectRecipe(documentInjectorOptions);
 
             //act
-            documentInjector.Inject(workbook);
+            documentInjector.Cook();
 
             //assert
             var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (1, 1, 1));
@@ -56,16 +57,17 @@ namespace TemplateCookerUnitTests.DocumentInjection
             using var workbook = new WorkbookImplementation(new XLWorkbook("Assets/Templates/one-marker.xlsx"));
             var imageBytes = File.ReadAllBytes("Assets/Images/checker.png");
             var injection = new ImageInjection { Resource = new ImageResourceObject(imageBytes) };
-            var documentInjectorOptions = new DocumentInjectorOptions
+            var documentInjectorOptions = new InjectRecipe.Options
             {
                 ResourceInjector = new VariantResourceInjector(),
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
+                Workbook = workbook,
             };
-            var documentInjector = new DocumentInjector(documentInjectorOptions);
+            var documentInjector = new InjectRecipe(documentInjectorOptions);
 
             //act
-            documentInjector.Inject(workbook);
+            documentInjector.Cook();
 
             //assert
             var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (0, 0, 0));
@@ -80,16 +82,17 @@ namespace TemplateCookerUnitTests.DocumentInjection
             var templatePath = "Assets/Templates/one-marker.xlsx";
             using var workbook = new WorkbookImplementation(new XLWorkbook(templatePath));
             var injection = new TextInjection { Resource = new TextResourceObject("text") };
-            var documentInjectorOptions = new DocumentInjectorOptions
+            var documentInjectorOptions = new InjectRecipe.Options
             {
                 ResourceInjector = new VariantResourceInjector(),
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
+                Workbook = workbook,
             };
-            var documentInjector = new DocumentInjector(documentInjectorOptions);
+            var documentInjector = new InjectRecipe(documentInjectorOptions);
 
             //act
-            documentInjector.Inject(workbook);
+            documentInjector.Cook();
 
             //assert
             var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (0, 0, 0));
