@@ -19,6 +19,8 @@ namespace TemplateCooker.Domain.Layout
             ColumnIndex = columnIndex;
         }
 
+        public RcPosition Clone() => new RcPosition(RowIndex, ColumnIndex);
+        public RcPosition WithShift(int rowShift, int columnShift) => new RcPosition(RowIndex + rowShift, ColumnIndex + columnShift);
 
         public override bool Equals(object obj)
         {

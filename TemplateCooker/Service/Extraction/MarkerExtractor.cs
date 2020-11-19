@@ -47,14 +47,13 @@ namespace TemplateCooker.Service.Extraction
                         if (markerId == null)
                             continue;
                         var isEndMarker = markerId.Substring(0, _markerOptions.Terminator.Length) == _markerOptions.Terminator;
-                        var marker = new Marker
-                        {
-                            Id = isEndMarker
+                        var marker = new Marker(
+                            id: isEndMarker
                                 ? markerId.Substring(_markerOptions.Terminator.Length)
                                 : markerId,
-                            Position = new SrcPosition(sheet.SheetIndex, row.FirstCell().RowIndex, cell.ColumnIndex),
-                            MarkerType = isEndMarker ? MarkerType.End : MarkerType.Start
-                        };
+                            position: new SrcPosition(sheet.SheetIndex, row.FirstCell().RowIndex, cell.ColumnIndex),
+                            markerType: isEndMarker ? MarkerType.End : MarkerType.Start
+                        );
                         yield return marker;
                     }
                 }

@@ -32,7 +32,7 @@ namespace XlsxTemplateReporter
                 //"two-markers-on-one-row",
                 //"one-marker",
                 "real-project-report",
-                "_current",
+                //"_current",
             };
             var files = templates
                 .Select(x => new InOut

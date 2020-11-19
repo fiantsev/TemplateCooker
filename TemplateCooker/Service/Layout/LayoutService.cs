@@ -70,6 +70,7 @@ namespace TemplateCooker.Service.Layout
             //HACK
             var sheetIndex = layoutShifts.FirstOrDefault()?.Item.MarkerRange.StartMarker.Position.SheetIndex ?? 0;
             var workbook = layoutShifts.FirstOrDefault()?.Item.Workbook;
+            var previousRowShiftAmountAccumulated = 0;
 
             layoutShifts
                 .GroupBy(x => x.Intent.LayoutElement.TopLeft.RowIndex)
@@ -81,21 +82,22 @@ namespace TemplateCooker.Service.Layout
                     var withRowShiftIntent = rowGroup.Where(x => x.Intent.Type == LayoutShiftType.MoveRows).ToList();
 
                     var maxAreaHeight = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
-                    var markerRange = new MarkerRange(new Marker { MarkerType = MarkerType.Start, Position = new SrcPosition(sheetIndex, rowIndex, 0) });
+                    //HACK: создаем фейковый маркер (и рендж) только ради передачи rowIndex'a дальше в инжеткор пустых строк
+                    var markerRange = new MarkerRange(new Marker("", new SrcPosition(sheetIndex, rowIndex + previousRowShiftAmountAccumulated, 0), MarkerType.Start));
 
                     var noNeedRowShiftInjection = withRowShiftIntent.Count == 0 || maxAreaHeight == 0;
 
                     if (noNeedRowShiftInjection)
                     {
-                        outputStream.AddRange(rowGroup.Select(x => x.Item));
+                        outputStream.AddRange(rowGroup.Select(x => new InjectionContext { Injection = x.Item.Injection, MarkerRange = x.Item.MarkerRange.WithShift(previousRowShiftAmountAccumulated, 0), Workbook = workbook }));
                     }
                     else
                     {
-                        var rowShiftInjection = new InjectionContext { Injection = new EmptyRowsInjection(maxAreaHeight), MarkerRange = markerRange, Workbook = workbook };
-
-                        outputStream.Add(rowShiftInjection);
-                        outputStream.AddRange(rowGroup.Select(x => x.Item));
-                        outputStream.Add(new InjectionContext { Injection = new ExtendFormulasDownInjection { SheetIndex = sheetIndex, FromRowIndex = rowIndex, ToRowIndex = rowIndex + maxAreaHeight }, MarkerRange = markerRange, Workbook = workbook });
+                        //нужно избавиться здесь от InjectionContext'ov потому что они здесь излишнии
+                        outputStream.Add(new InjectionContext { Injection = new EmptyRowsInjection(maxAreaHeight), MarkerRange = markerRange, Workbook = workbook });
+                        outputStream.AddRange(rowGroup.Select(x => new InjectionContext { Injection = x.Item.Injection, MarkerRange = x.Item.MarkerRange.WithShift(previousRowShiftAmountAccumulated, 0), Workbook = workbook }));
+                        outputStream.Add(new InjectionContext { Injection = new ExtendFormulasDownInjection { SheetIndex = sheetIndex, FromRowIndex = rowIndex + previousRowShiftAmountAccumulated, ToRowIndex = rowIndex + maxAreaHeight + previousRowShiftAmountAccumulated }, MarkerRange = markerRange, Workbook = workbook });
+                        previousRowShiftAmountAccumulated += maxAreaHeight;
                     }
                 });
 

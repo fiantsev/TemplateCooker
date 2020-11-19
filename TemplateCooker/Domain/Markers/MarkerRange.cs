@@ -24,18 +24,20 @@ namespace TemplateCooker.Domain.Markers
         public MarkerRange(Marker startMarker, Marker endMarker = null)
         {
             if (endMarker == null)
-            {
-                endMarker = startMarker.Clone();
-                endMarker.MarkerType = MarkerType.End;
-            }
+                endMarker = new Marker(startMarker.Id, startMarker.Position.Clone(), MarkerType.End);
 
             if (startMarker.MarkerType != MarkerType.Start || endMarker.MarkerType != MarkerType.End || startMarker.Id != endMarker.Id)
                 throw new ArgumentException();
 
             StartMarker = startMarker;
-            EndMarker = endMarker;
+            _EndMarker = endMarker;
 
             Collapsed = startMarker.Position == endMarker.Position;
+        }
+
+        public MarkerRange WithShift(int rowShift = 0, int columnShift = 0)
+        {
+            return new MarkerRange(StartMarker.WithShift(rowShift, columnShift), _EndMarker.WithShift(rowShift, columnShift));
         }
     }
 }
