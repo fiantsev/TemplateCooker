@@ -83,19 +83,19 @@ namespace TemplateCooker.Service.Layout
                     var maxAreaHeight = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
                     var markerRange = new MarkerRange(new Marker { MarkerType = MarkerType.Start, Position = new SrcPosition(sheetIndex, rowIndex, 0) });
 
-                    var reallyNeedRowShiftInjection = withRowShiftIntent.Count == 0 || maxAreaHeight == 0;
+                    var noNeedRowShiftInjection = withRowShiftIntent.Count == 0 || maxAreaHeight == 0;
 
-                    if (reallyNeedRowShiftInjection)
+                    if (noNeedRowShiftInjection)
+                    {
+                        outputStream.AddRange(rowGroup.Select(x => x.Item));
+                    }
+                    else
                     {
                         var rowShiftInjection = new InjectionContext { Injection = new EmptyRowsInjection(maxAreaHeight), MarkerRange = markerRange, Workbook = workbook };
 
                         outputStream.Add(rowShiftInjection);
                         outputStream.AddRange(rowGroup.Select(x => x.Item));
                         outputStream.Add(new InjectionContext { Injection = new ExtendFormulasDownInjection { SheetIndex = sheetIndex, FromRowIndex = rowIndex, ToRowIndex = rowIndex + maxAreaHeight }, MarkerRange = markerRange, Workbook = workbook });
-                    }
-                    else
-                    {
-                        outputStream.AddRange(rowGroup.Select(x => x.Item));
                     }
                 });
 

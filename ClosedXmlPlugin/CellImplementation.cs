@@ -89,8 +89,8 @@ namespace ClosedXmlPlugin
 
         public void Copy(ICellAbstraction cell)
         {
-            var toCell = _cell.Worksheet.Row(cell.RowIndex).Cell(cell.ColumnIndex);
-            _cell.CopyTo(toCell);
+            var innerCell = (cell as CellImplementation)._cell;
+            _cell.CopyTo(innerCell);
         }
     }
 }

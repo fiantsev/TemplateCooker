@@ -41,7 +41,7 @@ namespace XlsxTemplateReporter
                 })
                 .ToList();
 
-            files.ForEach(TreatFile2);
+            files.ForEach(TreatFile);
 
             //Console.ReadKey();
         }

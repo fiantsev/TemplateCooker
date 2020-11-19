@@ -11,9 +11,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             var injection = (context.Injection as ExtendFormulasDownInjection);
             var sheet = context.Workbook.GetSheet(injection.SheetIndex);
 
-            var rowToCheckFormulas = context.Workbook
-                .GetSheet(injection.SheetIndex)
-                .GetRow(injection.FromRowIndex);
+            var rowToCheckFormulas = sheet.GetRow(injection.FromRowIndex);
 
             var cellsWithFormula = rowToCheckFormulas.GetUsedCells().Where(x => x.HasFormula).ToList();
 
