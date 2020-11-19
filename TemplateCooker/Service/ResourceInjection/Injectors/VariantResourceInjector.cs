@@ -24,8 +24,8 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                 case NoopInjection _:
                     new NoopInjector().Inject(context);
                     break;
-                case ExtendFormulasDownInjection _:
-                    new ExtendFormulasDownInjector().Inject(context);
+                case FillDownFormulasInjection _:
+                    new FillDownFormulasInjector().Inject(context);
                     break;
                 default:
                     throw new Exception($"Неизвестный тип объекта экспорта: {context.Injection?.GetType().Name}");

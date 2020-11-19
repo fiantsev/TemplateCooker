@@ -1,5 +1,8 @@
-﻿using System;
+﻿using PluginAbstraction;
+using System;
+using System.Linq;
 using TemplateCooker.Domain.Injections;
+using TemplateCooker.Domain.ResourceObjects;
 
 namespace TemplateCooker.Service.ResourceInjection.Injectors
 {
@@ -13,7 +16,8 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
         private void InsertTable(InjectionContext injectionContext)
         {
             var markerPosition = injectionContext.MarkerRange.StartMarker.Position;
-            var table = (injectionContext.Injection as TableInjection).Resource.Object;
+            var tableInjection = (injectionContext.Injection as TableInjection);
+            var table = tableInjection.Resource.Object;
             var sheet = injectionContext.Workbook.GetSheet(markerPosition.SheetIndex);
             var topLeftCell = sheet.GetRow(markerPosition.RowIndex).GetCell(markerPosition.ColumnIndex);
 
@@ -26,6 +30,9 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             if (rowCount == 0 || columnCount == 0)
                 topLeftCell.SetValue(string.Empty);
 
+            if (tableInjection.LayoutShift == LayoutShiftType.MoveRows)
+                CloneFirstRowBelow(sheet, topLeftCell, rowCount, columnCount);
+
             var cellCounter = 0;
             foreach (var cell in topLeftCell.GetMergedCells(rowCount, columnCount))
             {
@@ -33,6 +40,22 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                 var columnIndex = cellCounter % columnCount;
                 cell.SetValue(table[rowIndex][columnIndex]);
                 ++cellCounter;
+            }
+        }
+
+        private void CloneFirstRowBelow(ISheetAbstraction sheet, ICellAbstraction topLeftCell, int rowCount, int columnCount)
+        {
+            if (rowCount == 0 || columnCount == 0) 
+                return;
+
+            var firstRowMergedCells = topLeftCell.GetMergedCells(1, columnCount).ToList();
+            var firstCellHeight = firstRowMergedCells.First().GetMergedRange().Height;
+            var range = sheet.GetRange(firstRowMergedCells.First(), firstRowMergedCells.Last().GetMergedRange().BottomRightCell());
+
+            for(var i = 1; i < rowCount; ++i)
+            {
+                var toCell = sheet.GetRow(topLeftCell.RowIndex + i* firstCellHeight).GetCell(topLeftCell.ColumnIndex);
+                range.CopyTo(toCell);
             }
         }
     }

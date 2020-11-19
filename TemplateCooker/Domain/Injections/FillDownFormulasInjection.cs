@@ -1,6 +1,6 @@
 ﻿namespace TemplateCooker.Domain.Injections
 {
-    public class ExtendFormulasDownInjection : Injection
+    public class FillDownFormulasInjection : Injection
     {
         public int SheetIndex { get; set; }
         public int FromRowIndex { get; set; }

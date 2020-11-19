@@ -1,9 +1,10 @@
 ﻿using PluginAbstraction;
+using TemplateCooker.Domain.Layout;
 using TemplateCooker.Domain.Markers;
 
 namespace TemplateCooker.Service.Utils
 {
-    public class CellUtils
+    public static class CellUtils
     {
         public static string ExtractMarkerValueOrNull(ICellAbstraction cell, MarkerOptions markerOptions)
         {
@@ -18,6 +19,11 @@ namespace TemplateCooker.Service.Utils
                     return stringCellValue.Substring(markerOptions.Prefix.Length, stringCellValue.Length - (markerOptions.Prefix.Length + markerOptions.Suffix.Length)); ;
             }
             return null;
+        }
+
+        public static ICellAbstraction GetCell(this IWorkbookAbstraction workbook, SrcPosition srcPosition)
+        {
+            return workbook.GetSheet(srcPosition.SheetIndex).GetRow(srcPosition.RowIndex).GetCell(srcPosition.ColumnIndex);
         }
     }
 }

@@ -25,5 +25,21 @@ namespace ClosedXmlPlugin
         public void Dispose()
         {
         }
+
+        public void CopyTo(ICellAbstraction cell)
+        {
+            var _cell = _range.Worksheet.Row(cell.RowIndex + 1).Cell(cell.ColumnIndex + 1);
+            _cell.Value = this._range;
+        }
+
+        public ICellAbstraction TopLeftCell()
+        {
+            return new CellImplementation(_range.FirstCell());
+        }
+
+        public ICellAbstraction BottomRightCell()
+        {
+            return new CellImplementation(_range.LastCell());
+        }
     }
 }

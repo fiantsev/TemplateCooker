@@ -93,9 +93,11 @@ namespace ClosedXmlPlugin
             _cell.CopyTo(innerCell);
         }
 
-        IRangeAbstraction GetMergedRange()
+        public IRangeAbstraction GetMergedRange()
         {
-            var range = _cell.MergedRange();
+            var range = _cell.IsMerged()
+                ? _cell.MergedRange()
+                : _cell.Worksheet.Range(_cell, _cell);
             return new RangeImplementation(range);
         }
     }

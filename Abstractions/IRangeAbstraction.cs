@@ -8,5 +8,8 @@ namespace PluginAbstraction
         int LeftColumnIndex { get; }
         int Height { get; }
         int Width { get; }
+        void CopyTo(ICellAbstraction cell);
+        ICellAbstraction TopLeftCell();
+        ICellAbstraction BottomRightCell();
     }
 }

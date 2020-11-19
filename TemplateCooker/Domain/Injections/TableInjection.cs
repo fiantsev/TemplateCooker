@@ -10,6 +10,7 @@ namespace TemplateCooker.Domain.Injections
 
         /// <summary>
         /// HACK: переделать механизм
+        /// УДАЛИТЬ !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         /// </summary>
         public int СountOfRowsToInsert { get; set; } = 0;
     }

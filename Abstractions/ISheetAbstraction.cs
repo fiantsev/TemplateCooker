@@ -11,5 +11,6 @@ namespace PluginAbstraction
         IEnumerable<IRowAbstraction> GetRows();
         IEnumerable<IRowAbstraction> GetUsedRows();
         IRowAbstraction GetRow(int index);
+        IRangeAbstraction GetRange(ICellAbstraction from, ICellAbstraction to);
     }
 }

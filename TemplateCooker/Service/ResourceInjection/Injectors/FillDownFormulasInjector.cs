@@ -4,11 +4,11 @@ using TemplateCooker.Domain.Injections;
 
 namespace TemplateCooker.Service.ResourceInjection.Injectors
 {
-    public class ExtendFormulasDownInjector : IResourceInjector
+    public class FillDownFormulasInjector : IResourceInjector
     {
         public Action<InjectionContext> Inject => context =>
         {
-            var injection = (context.Injection as ExtendFormulasDownInjection);
+            var injection = (context.Injection as FillDownFormulasInjection);
             var sheet = context.Workbook.GetSheet(injection.SheetIndex);
 
             var rowToCheckFormulas = sheet.GetRow(injection.FromRowIndex);
@@ -19,7 +19,7 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
             {
                 var row = sheet.GetRow(rowIndex);
                 foreach (var cellWithFormula in cellsWithFormula)
-                    cellWithFormula.Copy(row.GetCell(cellWithFormula.ColumnIndex));
+                    cellWithFormula.GetMergedRange().CopyTo(row.GetCell(cellWithFormula.ColumnIndex));
             }
         };
     }

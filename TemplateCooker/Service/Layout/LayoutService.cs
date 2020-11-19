@@ -6,6 +6,7 @@ using TemplateCooker.Domain.Layout;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Domain.ResourceObjects;
 using TemplateCooker.Service.ResourceInjection;
+using TemplateCooker.Service.Utils;
 
 namespace TemplateCooker.Service.Layout
 {
@@ -24,9 +25,8 @@ namespace TemplateCooker.Service.Layout
         {
             if (contexts.Select(x => x.MarkerRange.StartMarker.Position.SheetIndex).Distinct().Count() > 1)
                 throw new Exception("инъекции должны приходить по одному листу");
-            var s1 = ExtractLayoutShiftIntents(contexts);
-            var s2 = InnerProcessLayout(s1);
-            return s2;
+            var result = InnerProcessLayout(contexts);
+            return result;
         }
 
         //one-to-one mapping should be preserved
@@ -69,60 +69,68 @@ namespace TemplateCooker.Service.Layout
         /// <summary>
         /// метод должен вернуть обновленные позиции инъекций и дополнить поток инъекций новыми утилити-инъекциями (напр добавление пустых строк)
         /// </summary>
-        /// <param name="layoutMappings"></param>
-        /// <returns></returns>
-        private List<InjectionContext> InnerProcessLayout(List<LayoutShift> layoutShifts)
+        private List<InjectionContext> InnerProcessLayout(List<InjectionContext> contexts)
         {
             var outputStream = new List<InjectionContext>();
 
-            //HACK
-            var sheetIndex = layoutShifts.FirstOrDefault()?.Item.MarkerRange.StartMarker.Position.SheetIndex ?? 0;
-            var workbook = layoutShifts.FirstOrDefault()?.Item.Workbook;
-            var sheet = workbook.GetSheet(sheetIndex);
             var previousRowShiftAmountAccumulated = 0;
 
-            layoutShifts
-                .GroupBy(x => x.Intent.LayoutElement.TopLeft.RowIndex)
+            contexts
+                .GroupBy(x => x.MarkerRange.StartMarker.Position.RowIndex)
                 .ToList()
-                .ForEach(rowGroup =>
+                .ForEach(contextsOnSameRow =>
                 {
-                    var rowIndex = rowGroup.Key;
+                    var firstContext = contextsOnSameRow.First();
+                    var workbook = firstContext.Workbook;
+                    var sheetIndex = firstContext.MarkerRange.StartMarker.Position.SheetIndex;
+                    var rowIndex = firstContext.MarkerRange.StartMarker.Position.RowIndex;
 
-                    var withRowShiftIntent = rowGroup.Where(x => x.Intent.Type == LayoutShiftType.MoveRows).ToList();
+                    var (rowCountToInsert, rowToInsertPosition) = FindHowMuchNewEmptyRowsToInsertAndWhere(contextsOnSameRow.ToList());
 
-                    var s3 = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
-
-                    //var maxAreaHeight = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
-                    //var howMuchNewEmptyRowsToInsert = Math.Max(0, maxAreaHeight - 1); //строчка в которой находиться маркер уже дает одну клетку пространства
-
-                    //HACK: создаем фейковый маркер (и рендж) только ради передачи rowIndex'a дальше в инжеткор пустых строк
-                    var markerRange = new MarkerRange(new Marker("", new SrcPosition(sheetIndex, rowIndex + previousRowShiftAmountAccumulated, 0), MarkerType.Start));
-
-                    var noNeedRowShiftInjection = withRowShiftIntent.Count == 0 || howMuchNewEmptyRowsToInsert == 0;
-
-                    if (noNeedRowShiftInjection)
+                    if (rowCountToInsert > 0)
                     {
-                        outputStream.AddRange(rowGroup.Select(x => new InjectionContext { Injection = x.Item.Injection, MarkerRange = x.Item.MarkerRange.WithShift(previousRowShiftAmountAccumulated, 0), Workbook = workbook }));
+                        //нужно избавиться здесь от InjectionContext'ov потому что они здесь излишнии
+                        outputStream.Add(new InjectionContext { Injection = new EmptyRowsInjection(rowCountToInsert), MarkerRange = new MarkerRange(new Marker("", rowToInsertPosition.WithShift(previousRowShiftAmountAccumulated, 0), MarkerType.Start)), Workbook = workbook });
+                        outputStream.AddRange(contextsOnSameRow.Select(x => new InjectionContext { Injection = x.Injection, MarkerRange = x.MarkerRange.WithShift(previousRowShiftAmountAccumulated, 0), Workbook = workbook }));
+                        outputStream.Add(new InjectionContext { Injection = new FillDownFormulasInjection { SheetIndex = sheetIndex, FromRowIndex = rowIndex + previousRowShiftAmountAccumulated, ToRowIndex = rowIndex + rowCountToInsert + previousRowShiftAmountAccumulated }, /*НЕИСПОЛЬЗУЕТСЯ*/MarkerRange = new MarkerRange(new Marker("", new SrcPosition(sheetIndex, 0,0), MarkerType.Start)), Workbook = workbook });
+                        previousRowShiftAmountAccumulated += rowCountToInsert;
                     }
                     else
                     {
-                        //нужно избавиться здесь от InjectionContext'ov потому что они здесь излишнии
-                        outputStream.Add(new InjectionContext { Injection = new EmptyRowsInjection(howMuchNewEmptyRowsToInsert), MarkerRange = markerRange, Workbook = workbook });
-                        outputStream.AddRange(rowGroup.Select(x => new InjectionContext { Injection = x.Item.Injection, MarkerRange = x.Item.MarkerRange.WithShift(previousRowShiftAmountAccumulated, 0), Workbook = workbook }));
-                        outputStream.Add(new InjectionContext { Injection = new ExtendFormulasDownInjection { SheetIndex = sheetIndex, FromRowIndex = rowIndex + previousRowShiftAmountAccumulated, ToRowIndex = rowIndex + howMuchNewEmptyRowsToInsert + previousRowShiftAmountAccumulated }, MarkerRange = markerRange, Workbook = workbook });
-                        previousRowShiftAmountAccumulated += howMuchNewEmptyRowsToInsert;
+                        outputStream.AddRange(contextsOnSameRow.Select(x => new InjectionContext { Injection = x.Injection, MarkerRange = x.MarkerRange.WithShift(previousRowShiftAmountAccumulated, 0), Workbook = workbook }));
                     }
                 });
 
             return outputStream;
         }
 
-        private int FindHowMuchNewEmptyRowsToInsert(List<LayoutShift> withRowShiftIntents)
+        private (int, SrcPosition) FindHowMuchNewEmptyRowsToInsertAndWhere(List<InjectionContext> contexts)
         {
-            var s1 = withRowShiftIntents.Select(x =>
-            {
-                var s2 = x.Intent.LayoutElement.Area.Height;
-            }).DefaultIfEmpty(0).Max();
+            var tables = contexts
+                .Where(x =>
+                {
+                    if (x.Injection is TableInjection tableInjection && tableInjection.LayoutShift == LayoutShiftType.MoveRows)
+                        return true;
+                    else
+                        return false;
+                })
+                .Select(x => new
+                {
+                    Context = x,
+                    StartMarkerCellHeight = x.Workbook.GetCell(x.MarkerRange.StartMarker.Position).GetMergedRange().Height,
+                    RowCount = (x.Injection as TableInjection).Resource.Object.Count
+                });
+
+            var max = tables
+                .OrderByDescending(x => x.StartMarkerCellHeight * x.RowCount)
+                .FirstOrDefault();
+
+            if (max == null)
+                return (0, null);
+
+            var countOfNewRowsToInsert = Math.Max(0, max.RowCount - 1) * max.StartMarkerCellHeight;
+            var positionToInsertNewRows = max.Context.MarkerRange.StartMarker.Position.WithShift(max.StartMarkerCellHeight - 1 , 0);
+            return (countOfNewRowsToInsert, positionToInsertNewRows);
         }
     }
 }
