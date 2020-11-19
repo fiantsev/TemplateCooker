@@ -34,9 +34,16 @@ namespace TemplateCooker.Service.Layout
         {
             return contexts.ToDictionary(context => context, context =>
                 {
+                    var sheetIndex = context.MarkerRange.StartMarker.Position.SheetIndex;
                     var rowIndex = context.MarkerRange.StartMarker.Position.RowIndex;
                     var columnIndex = context.MarkerRange.StartMarker.Position.ColumnIndex;
                     var rcPosition = new RcPosition(rowIndex, columnIndex);
+
+                    var cellMergedRange = context.Workbook
+                        .GetSheet(sheetIndex)
+                        .GetRow(rowIndex)
+                        .GetCell(columnIndex)
+                        .GetMergedRange();
 
                     switch (context.Injection)
                     {
@@ -44,14 +51,15 @@ namespace TemplateCooker.Service.Layout
                             {
                                 var tableRowCount = tableInjection.Resource.Object.Count;
                                 var tableColumnCount = tableRowCount == 0 ? 0 : tableInjection.Resource.Object[0].Count;
+
                                 var rcDimensions = new RcDimensions(
                                     Math.Max(1, tableRowCount),
                                     Math.Max(1, tableColumnCount)
                                 );
-                                return new LayoutShiftIntent(new LayoutElement(rcPosition, rcDimensions), tableInjection.LayoutShift);
+                                return new LayoutShiftIntent(new LayoutElement(rcPosition, rcDimensions), tableInjection.LayoutShift, new RcDimensions(cellMergedRange.Height, cellMergedRange.Width));
                             }
                         default:
-                            return new LayoutShiftIntent(new LayoutElement(rcPosition, new RcDimensions(1, 1)), LayoutShiftType.None);
+                            return new LayoutShiftIntent(new LayoutElement(rcPosition, new RcDimensions(1, 1)), LayoutShiftType.None, new RcDimensions(1, 1));
                     }
                 })
                 .Select(x => new LayoutShift { Intent = x.Value, Item = x.Key })
@@ -70,6 +78,7 @@ namespace TemplateCooker.Service.Layout
             //HACK
             var sheetIndex = layoutShifts.FirstOrDefault()?.Item.MarkerRange.StartMarker.Position.SheetIndex ?? 0;
             var workbook = layoutShifts.FirstOrDefault()?.Item.Workbook;
+            var sheet = workbook.GetSheet(sheetIndex);
             var previousRowShiftAmountAccumulated = 0;
 
             layoutShifts
@@ -81,11 +90,15 @@ namespace TemplateCooker.Service.Layout
 
                     var withRowShiftIntent = rowGroup.Where(x => x.Intent.Type == LayoutShiftType.MoveRows).ToList();
 
-                    var maxAreaHeight = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
+                    var s3 = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
+
+                    //var maxAreaHeight = withRowShiftIntent.Select(x => x.Intent.LayoutElement.Area.Height).DefaultIfEmpty(0).Max();
+                    //var howMuchNewEmptyRowsToInsert = Math.Max(0, maxAreaHeight - 1); //строчка в которой находиться маркер уже дает одну клетку пространства
+
                     //HACK: создаем фейковый маркер (и рендж) только ради передачи rowIndex'a дальше в инжеткор пустых строк
                     var markerRange = new MarkerRange(new Marker("", new SrcPosition(sheetIndex, rowIndex + previousRowShiftAmountAccumulated, 0), MarkerType.Start));
 
-                    var noNeedRowShiftInjection = withRowShiftIntent.Count == 0 || maxAreaHeight == 0;
+                    var noNeedRowShiftInjection = withRowShiftIntent.Count == 0 || howMuchNewEmptyRowsToInsert == 0;
 
                     if (noNeedRowShiftInjection)
                     {
@@ -94,14 +107,22 @@ namespace TemplateCooker.Service.Layout
                     else
                     {
                         //нужно избавиться здесь от InjectionContext'ov потому что они здесь излишнии
-                        outputStream.Add(new InjectionContext { Injection = new EmptyRowsInjection(maxAreaHeight), MarkerRange = markerRange, Workbook = workbook });
+                        outputStream.Add(new InjectionContext { Injection = new EmptyRowsInjection(howMuchNewEmptyRowsToInsert), MarkerRange = markerRange, Workbook = workbook });
                         outputStream.AddRange(rowGroup.Select(x => new InjectionContext { Injection = x.Item.Injection, MarkerRange = x.Item.MarkerRange.WithShift(previousRowShiftAmountAccumulated, 0), Workbook = workbook }));
-                        outputStream.Add(new InjectionContext { Injection = new ExtendFormulasDownInjection { SheetIndex = sheetIndex, FromRowIndex = rowIndex + previousRowShiftAmountAccumulated, ToRowIndex = rowIndex + maxAreaHeight + previousRowShiftAmountAccumulated }, MarkerRange = markerRange, Workbook = workbook });
-                        previousRowShiftAmountAccumulated += maxAreaHeight;
+                        outputStream.Add(new InjectionContext { Injection = new ExtendFormulasDownInjection { SheetIndex = sheetIndex, FromRowIndex = rowIndex + previousRowShiftAmountAccumulated, ToRowIndex = rowIndex + howMuchNewEmptyRowsToInsert + previousRowShiftAmountAccumulated }, MarkerRange = markerRange, Workbook = workbook });
+                        previousRowShiftAmountAccumulated += howMuchNewEmptyRowsToInsert;
                     }
                 });
 
             return outputStream;
+        }
+
+        private int FindHowMuchNewEmptyRowsToInsert(List<LayoutShift> withRowShiftIntents)
+        {
+            var s1 = withRowShiftIntents.Select(x =>
+            {
+                var s2 = x.Intent.LayoutElement.Area.Height;
+            }).DefaultIfEmpty(0).Max();
         }
     }
 }
