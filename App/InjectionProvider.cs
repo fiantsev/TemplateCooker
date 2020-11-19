@@ -29,7 +29,7 @@ namespace XlsxTemplateReporter
                 case "table3":
                     {
                         var resource = GetResourceObjectStorage()["tableOneColumnOfInt"];
-                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.None };
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
 
                     }
                 case "table4":
