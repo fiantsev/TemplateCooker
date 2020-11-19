@@ -92,5 +92,11 @@ namespace ClosedXmlPlugin
             var innerCell = (cell as CellImplementation)._cell;
             _cell.CopyTo(innerCell);
         }
+
+        IRangeAbstraction GetMergedRange()
+        {
+            var range = _cell.MergedRange();
+            return new RangeImplementation(range);
+        }
     }
 }

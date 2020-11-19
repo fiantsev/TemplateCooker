@@ -20,5 +20,6 @@ namespace PluginAbstraction
         IMergedCellCollectionAbstraction GetMergedCells(int rowCount, int columnCount);
 
         void Copy(ICellAbstraction cell);
+        IRangeAbstraction GetMergedRange();
     }
 }
