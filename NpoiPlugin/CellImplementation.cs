@@ -92,5 +92,10 @@ namespace NpoiPlugin
         {
             throw new NotImplementedException();
         }
+
+        public IRangeAbstraction GetMergedRange()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

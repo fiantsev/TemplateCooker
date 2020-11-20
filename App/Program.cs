@@ -1,10 +1,11 @@
 ﻿using ClosedXML.Excel;
+using PluginAbstraction;
 using System;
 using System.Data;
 using System.IO;
 using System.Linq;
 using TemplateCooker.Domain.Markers;
-using TemplateCooker.Recipes.Update;
+using TemplateCooker.Recipes;
 using TemplateCooker.Service.Builders;
 
 namespace XlsxTemplateReporter
@@ -57,23 +58,28 @@ namespace XlsxTemplateReporter
 
             //при реальном использование есть необходимость извлечь все маркеры прежде чем двигаться дальше
             //маркеры необходимы для того что бы отправить запрос за данными
-            var allMarkers = templateBuilder.ReadMarkers(markerOptions);
+            var allMarkers = templateBuilder.ExtractMarkers(new ExtractMarkersRecipe.Options { MarkerOptions = markerOptions });
             Console.WriteLine($"Found {allMarkers.Count}: {string.Join(',', allMarkers.Select(x => x.Id))}");
 
-            var resourceInjector = new ResourceInjector();
-            var injectionProvider = new InjectionProvider();
             var injectRecipeOptions = new InjectRecipe.Options
             {
-                ResourceInjector = resourceInjector,
-                InjectionProvider = injectionProvider,
+                ResourceInjector = new ResourceInjector(),
+                InjectionProvider = new InjectionProvider(),
                 MarkerOptions = markerOptions,
             };
+            templateBuilder.InjectData(injectRecipeOptions);
 
-            var documentStream = templateBuilder
-                .InjectData(injectRecipeOptions)
-                .SetupFormulaCalculations(forceFullCalculation: true, fullCalculationOnLoad: true)
-                .RecalculateFormulasOnBuild(false)
-                .Build();
+            var customProperties = new SetCustomPropertiesRecipe.Options
+            {
+                CustomProperties = new CustomProperties
+                {
+                    RecalculateFormulasOnSave = false,
+                    WorkbookProperties = new WorkbookProperties { ForceFullCalculation = true, FullCalculationOnLoad = true }
+                }
+            };
+            templateBuilder.SetCustomProperties(customProperties);
+
+            var documentStream = templateBuilder.Build();
 
             using (var outputFileStream = File.Open(file.Out, FileMode.Create, FileAccess.ReadWrite))
                 documentStream.CopyTo(outputFileStream);

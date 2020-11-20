@@ -3,17 +3,13 @@ using PluginAbstraction;
 using System.Collections.Generic;
 using System.IO;
 using TemplateCooker.Domain.Markers;
-using TemplateCooker.Recipes.Read;
-using TemplateCooker.Recipes.Update;
+using TemplateCooker.Recipes;
 
 namespace TemplateCooker.Service.Builders
 {
     public class TemplateBuilder
     {
         private IWorkbookAbstraction _workbook;
-        private bool _recalculateFormulasOnBuild;
-        private bool _forceFullCalculation;
-        private bool _fullCalculationOnLoad;
 
         public TemplateBuilder(Stream workbookStream)
         {
@@ -22,56 +18,30 @@ namespace TemplateCooker.Service.Builders
             _workbook = plugin.OpenWorkbook(workbookStream);
         }
 
-        public List<Marker> ReadMarkers(MarkerOptions markerOptions)
+        public List<Marker> ExtractMarkers(ExtractMarkersRecipe.Options options)
         {
-            var markers = new ExtractMarkersRecipe(new ExtractMarkersRecipe.Options
-            {
-                MarkerOptions = markerOptions,
-                Workbook = _workbook
-            }).Cook();
-
+            options.Workbook = _workbook;
+            var markers = new ExtractMarkersRecipe(options).Cook();
             return markers;
         }
 
         public TemplateBuilder InjectData(InjectRecipe.Options options)
         {
-            new InjectRecipe(new InjectRecipe.Options
-            {
-                Workbook = _workbook,
-                MarkerOptions = options.MarkerOptions,
-                InjectionProvider = options.InjectionProvider,
-                ResourceInjector = options.ResourceInjector,
-            }).Cook();
-
+            options.Workbook = _workbook;
+            new InjectRecipe(options).Cook();
             return this;
         }
 
-        public TemplateBuilder RecalculateFormulasOnBuild(bool recalculateFormulasOnBuild = true)
+        public TemplateBuilder SetCustomProperties(SetCustomPropertiesRecipe.Options options)
         {
-            _recalculateFormulasOnBuild = recalculateFormulasOnBuild;
-            return this;
-        }
-
-        public TemplateBuilder SetupFormulaCalculations(bool forceFullCalculation, bool fullCalculationOnLoad)
-        {
-            _forceFullCalculation = forceFullCalculation;
-            _fullCalculationOnLoad = fullCalculationOnLoad;
+            options.Workbook = _workbook;
+            new SetCustomPropertiesRecipe(options).Cook();
             return this;
         }
 
         public MemoryStream Build()
         {
             var resultStream = new MemoryStream();
-            var customProperties = new CustomProperties
-            {
-                WorkbookProperties = new WorkbookProperties
-                {
-                    ForceFullCalculation = _forceFullCalculation,
-                    FullCalculationOnLoad = _fullCalculationOnLoad,
-                },
-                RecalculateFormulasOnSave = _recalculateFormulasOnBuild
-            };
-            _workbook.SetCustomProperties(customProperties);
             _workbook.Save(resultStream);
             resultStream.Position = 0;
 

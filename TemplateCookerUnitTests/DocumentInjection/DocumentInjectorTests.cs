@@ -7,7 +7,7 @@ using TemplateCooker;
 using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Recipes.Update;
+using TemplateCooker.Recipes;
 using TemplateCooker.Service.InjectionProviders;
 using TemplateCooker.Service.ResourceInjection.Injectors;
 using TemplateCookerUnitTests._Helpers;

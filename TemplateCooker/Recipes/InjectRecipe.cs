@@ -7,16 +7,16 @@ using TemplateCooker.Service.InjectionProviders;
 using TemplateCooker.Service.Layout;
 using TemplateCooker.Service.ResourceInjection;
 
-namespace TemplateCooker.Recipes.Update
+namespace TemplateCooker.Recipes
 {
     public class InjectRecipe
     {
         public class Options
         {
+            public IWorkbookAbstraction Workbook { get; set; }
             public IResourceInjector ResourceInjector { get; set; }
             public IInjectionProvider InjectionProvider { get; set; }
             public MarkerOptions MarkerOptions { get; set; }
-            public IWorkbookAbstraction Workbook { get; set; }
         }
 
         private Options _options;

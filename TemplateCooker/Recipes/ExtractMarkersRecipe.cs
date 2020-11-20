@@ -4,14 +4,14 @@ using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Extraction;
 
-namespace TemplateCooker.Recipes.Read
+namespace TemplateCooker.Recipes
 {
     public class ExtractMarkersRecipe
     {
         public class Options
         {
-            public MarkerOptions MarkerOptions { get; set; }
             public IWorkbookAbstraction Workbook { get; set; }
+            public MarkerOptions MarkerOptions { get; set; }
         }
 
         private Options _options;
