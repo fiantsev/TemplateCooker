@@ -24,6 +24,8 @@ namespace TemplateCooker.Domain.Layout
 
         public SrcPosition Clone() => new SrcPosition(SheetIndex, RowIndex, ColumnIndex);
         public SrcPosition WithShift(int rowShift, int columnShift) => new SrcPosition(SheetIndex, RowIndex + rowShift, ColumnIndex + columnShift);
+        public SrPosition ToSrPosition() => new SrPosition(SheetIndex, RowIndex);
+        public RcPosition ToRcPosition() => new RcPosition(RowIndex, ColumnIndex);
 
         public override bool Equals(object obj)
         {
