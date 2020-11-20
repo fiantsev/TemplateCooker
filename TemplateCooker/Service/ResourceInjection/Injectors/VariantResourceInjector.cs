@@ -21,9 +21,6 @@ namespace TemplateCooker.Service.ResourceInjection.Injectors
                 case EmptyRowsInjection _:
                     new EmptyRowsInjector().Inject(context);
                     break;
-                case NoopInjection _:
-                    new NoopInjector().Inject(context);
-                    break;
                 case FillDownFormulasInjection _:
                     new FillDownFormulasInjector().Inject(context);
                     break;

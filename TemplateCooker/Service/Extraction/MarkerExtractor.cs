@@ -7,7 +7,7 @@ using TemplateCooker.Service.Utils;
 
 namespace TemplateCooker.Service.Extraction
 {
-    public class MarkerExtractor : IMarkerExtractor, IEnumerable<Marker>
+    public class MarkerExtractor : IEnumerable<Marker>
     {
         private readonly IEnumerable<ISheetAbstraction> _sheets;
         private readonly MarkerOptions _markerOptions;

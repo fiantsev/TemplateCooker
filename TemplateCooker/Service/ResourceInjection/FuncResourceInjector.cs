@@ -2,9 +2,9 @@
 
 namespace TemplateCooker.Service.ResourceInjection
 {
-    public class ResourceInjector : IResourceInjector
+    public class FuncResourceInjector : IResourceInjector
     {
-        public ResourceInjector(Action<InjectionContext> inject)
+        public FuncResourceInjector(Action<InjectionContext> inject)
         {
             Inject = inject;
         }
