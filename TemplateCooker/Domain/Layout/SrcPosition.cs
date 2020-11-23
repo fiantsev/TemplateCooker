@@ -23,7 +23,7 @@ namespace TemplateCooker.Domain.Layout
         }
 
         public SrcPosition Clone() => new SrcPosition(SheetIndex, RowIndex, ColumnIndex);
-        public SrcPosition WithShift(int rowShift, int columnShift) => new SrcPosition(SheetIndex, RowIndex + rowShift, ColumnIndex + columnShift);
+        public SrcPosition WithShift(int rowShift = 0, int columnShift = 0) => new SrcPosition(SheetIndex, RowIndex + rowShift, ColumnIndex + columnShift);
         public SrPosition ToSrPosition() => new SrPosition(SheetIndex, RowIndex);
         public RcPosition ToRcPosition() => new RcPosition(RowIndex, ColumnIndex);
 

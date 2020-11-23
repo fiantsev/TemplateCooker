@@ -31,7 +31,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
             var injection = new TableInjection { Resource = resourceObject, LayoutShift = LayoutShiftType.None };
             var documentInjectorOptions = new InjectRecipe.Options
             {
-                ResourceInjector = new VariantResourceInjector(),
+                InjectionProcessor = InjectRecipe.Options.DefaultInjectionProcessor,
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
                 Workbook = workbook,
@@ -59,7 +59,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
             var injection = new ImageInjection { Resource = new ImageResourceObject(imageBytes) };
             var documentInjectorOptions = new InjectRecipe.Options
             {
-                ResourceInjector = new VariantResourceInjector(),
+                InjectionProcessor = InjectRecipe.Options.DefaultInjectionProcessor,
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
                 Workbook = workbook,
@@ -84,7 +84,7 @@ namespace TemplateCookerUnitTests.DocumentInjection
             var injection = new TextInjection { Resource = new TextResourceObject("text") };
             var documentInjectorOptions = new InjectRecipe.Options
             {
-                ResourceInjector = new VariantResourceInjector(),
+                InjectionProcessor = InjectRecipe.Options.DefaultInjectionProcessor,
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
                 Workbook = workbook,

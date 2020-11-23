@@ -4,9 +4,9 @@ using TemplateCooker.Domain.Layout;
 
 namespace TemplateCooker.Service.Operations
 {
-    public class InsertImageOperation : IOperation
+    public class InsertImage : IOperationExecutor
     {
-        public class Options
+        public class Operation : AbstractOperation
         {
             public SrcPosition Position { get; set; }
             public byte[] Image { get; set; }
@@ -14,7 +14,7 @@ namespace TemplateCooker.Service.Operations
 
         public void Execute(IWorkbookAbstraction workbook, object untypedOptions)
         {
-            var options = (Options)untypedOptions;
+            var options = (Operation)untypedOptions;
             var position = options.Position;
 
             var cell = workbook

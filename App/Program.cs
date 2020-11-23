@@ -32,8 +32,8 @@ namespace XlsxTemplateReporter
                 //"two-markers-on-one-column",
                 //"two-markers-on-one-row",
                 //"one-marker",
-                "real-project-report",
-                //"_current",
+                //"real-project-report",
+                "_current",
             };
             var files = templates
                 .Select(x => new InOut
@@ -63,8 +63,8 @@ namespace XlsxTemplateReporter
 
             var injectRecipeOptions = new InjectRecipe.Options
             {
-                ResourceInjector = new ResourceInjector(),
                 InjectionProvider = new InjectionProvider(),
+                InjectionProcessor = new InjectionProcessor(),
                 MarkerOptions = markerOptions,
             };
             templateBuilder.InjectData(injectRecipeOptions);

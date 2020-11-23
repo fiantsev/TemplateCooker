@@ -1,10 +1,13 @@
 ﻿using PluginAbstraction;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Extraction;
 using TemplateCooker.Service.InjectionProviders;
 using TemplateCooker.Service.Layout;
+using TemplateCooker.Service.Operations;
+using TemplateCooker.Service.Processing;
 using TemplateCooker.Service.ResourceInjection;
 
 namespace TemplateCooker.Recipes
@@ -14,9 +17,12 @@ namespace TemplateCooker.Recipes
         public class Options
         {
             public IWorkbookAbstraction Workbook { get; set; }
-            public IResourceInjector ResourceInjector { get; set; }
+            //public IResourceInjector ResourceInjector { get; set; }
+            public IInjectionProcessor InjectionProcessor { get; set; }
             public IInjectionProvider InjectionProvider { get; set; }
             public MarkerOptions MarkerOptions { get; set; }
+
+            public static IInjectionProcessor DefaultInjectionProcessor = new DefaultInjectionProcessor();
         }
 
         private Options _options;
@@ -39,7 +45,7 @@ namespace TemplateCooker.Recipes
             {
                 var injectionContexts = GenerateInjections(workbook, sheet);
                 var processedInjectionContexts = ProcessInjections(injectionContexts);
-                ExecuteInjections(processedInjectionContexts);
+                ExecuteInjections(workbook, processedInjectionContexts);
             }
         }
 
@@ -60,15 +66,33 @@ namespace TemplateCooker.Recipes
             return injections.ToList();
         }
 
-        private List<InjectionContext> ProcessInjections(List<InjectionContext> injectionContexts)
+        private List<AbstractOperation> ProcessInjections(List<InjectionContext> injectionStream)
         {
-            return new LayoutService().ProcessLayout(injectionContexts);
+            var operationStream = new List<AbstractOperation>();
+            _options.InjectionProcessor.Process(injectionStream, operationStream);
+            return operationStream;
         }
 
-        private void ExecuteInjections(List<InjectionContext> injectionContexts)
+        private void ExecuteInjections(IWorkbookAbstraction workbook, List<AbstractOperation> operations)
         {
-            foreach (var injectionContext in injectionContexts)
-                _options.ResourceInjector.Inject(injectionContext);
+            foreach (var operation in operations)
+            {
+                var executor = GetExecutor(operation);
+                executor.Execute(workbook, operation);
+            }
+        }
+
+        private IOperationExecutor GetExecutor(AbstractOperation operation)
+        {
+            switch (operation)
+            {
+                case FillDownFormulas.Operation _: return new FillDownFormulas();
+                case InsertEmptyRows.Operation _: return new InsertEmptyRows();
+                case InsertImage.Operation _: return new InsertImage();
+                case InsertTable.Operation _: return new InsertTable();
+                case InsertText.Operation _: return new InsertText();
+                default: throw new Exception($"Не найден исполнитель для операции {operation?.GetType().Name}");
+            }
         }
     }
 }

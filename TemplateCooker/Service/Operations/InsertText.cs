@@ -3,9 +3,9 @@ using TemplateCooker.Domain.Layout;
 
 namespace TemplateCooker.Service.Operations
 {
-    public class InsertTextOperation : IOperation
+    public class InsertText : IOperationExecutor
     {
-        public class Options
+        public class Operation : AbstractOperation
         {
             public SrcPosition Position { get; set; }
             public string Text { get; set; }
@@ -13,7 +13,7 @@ namespace TemplateCooker.Service.Operations
 
         public void Execute(IWorkbookAbstraction workbook, object untypedOptions)
         {
-            var options = (Options)untypedOptions;
+            var options = (Operation)untypedOptions;
 
             var cell = workbook
                 .GetSheet(options.Position.SheetIndex)

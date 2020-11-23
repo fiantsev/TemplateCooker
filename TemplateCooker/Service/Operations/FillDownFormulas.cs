@@ -4,9 +4,9 @@ using TemplateCooker.Domain.Layout;
 
 namespace TemplateCooker.Service.Operations
 {
-    public class FillDownFormulasOperation : IOperation
+    public class FillDownFormulas : IOperationExecutor
     {
-        public class Options
+        public class Operation : AbstractOperation
         {
             public SrPosition From { get; set; }
             public SrPosition To { get; set; }
@@ -14,7 +14,7 @@ namespace TemplateCooker.Service.Operations
 
         public void Execute(IWorkbookAbstraction workbook, object untypedOptions)
         {
-            var options = (Options)untypedOptions;
+            var options = (Operation)untypedOptions;
             var from = options.From;
             var to = options.To;
             var sheet = workbook.GetSheet(from.SheetIndex);

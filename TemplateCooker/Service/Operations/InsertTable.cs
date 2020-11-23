@@ -5,9 +5,9 @@ using TemplateCooker.Domain.Layout;
 
 namespace TemplateCooker.Service.Operations
 {
-    public class InsertTableOperation : IOperation
+    public class InsertTable : IOperationExecutor
     {
-        public class Options
+        public class Operation : AbstractOperation
         {
             public SrcPosition Position { get; set; }
             public List<List<object>> Table { get; set; }
@@ -16,7 +16,7 @@ namespace TemplateCooker.Service.Operations
 
         public void Execute(IWorkbookAbstraction workbook, object untypedOptions)
         {
-            var options = (Options)untypedOptions;
+            var options = (Operation)untypedOptions;
             var table = options.Table;
             var sheet = workbook.GetSheet(options.Position.SheetIndex);
             var topLeftCell = sheet.GetRow(options.Position.RowIndex).GetCell(options.Position.ColumnIndex);

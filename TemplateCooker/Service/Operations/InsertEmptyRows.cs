@@ -3,9 +3,9 @@ using TemplateCooker.Domain.Layout;
 
 namespace TemplateCooker.Service.Operations
 {
-    public class InsertEmptyRowsOperation : IOperation
+    public class InsertEmptyRows : IOperationExecutor
     {
-        public class Options
+        public class Operation : AbstractOperation
         {
             public int RowsCount { get; set; }
             public SrPosition Position { get; set; }
@@ -13,7 +13,7 @@ namespace TemplateCooker.Service.Operations
 
         public void Execute(IWorkbookAbstraction workbook, object untypedOptions)
         {
-            var options = (Options)untypedOptions;
+            var options = (Operation)untypedOptions;
 
             if (options.RowsCount < 1)
                 return;
