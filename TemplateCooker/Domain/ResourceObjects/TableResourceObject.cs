@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TemplateCooker.Domain.ResourceObjects
+namespace TemplateCooking.Domain.ResourceObjects
 {
     public class TableResourceObject : ResourceObject
     {

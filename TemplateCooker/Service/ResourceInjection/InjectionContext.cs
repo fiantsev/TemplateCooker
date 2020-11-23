@@ -1,8 +1,8 @@
 ﻿using PluginAbstraction;
-using TemplateCooker.Domain.Injections;
-using TemplateCooker.Domain.Markers;
+using TemplateCooking.Domain.Injections;
+using TemplateCooking.Domain.Markers;
 
-namespace TemplateCooker.Service.ResourceInjection
+namespace TemplateCooking.Service.ResourceInjection
 {
     public class InjectionContext
     {

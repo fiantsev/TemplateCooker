@@ -1,4 +1,4 @@
-﻿namespace TemplateCooker.Domain.ResourceObjects
+﻿namespace TemplateCooking.Domain.ResourceObjects
 {
     public abstract class ResourceObject
     {

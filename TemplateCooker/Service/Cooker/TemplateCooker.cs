@@ -2,10 +2,10 @@
 using PluginAbstraction;
 using System.Collections.Generic;
 using System.IO;
-using TemplateCooker.Domain.Markers;
-using TemplateCooker.Recipes;
+using TemplateCooking.Domain.Markers;
+using TemplateCooking.Recipes;
 
-namespace TemplateCooker.Service.Cooker
+namespace TemplateCooking.Service.Cooker
 {
     public class TemplateCooker
     {

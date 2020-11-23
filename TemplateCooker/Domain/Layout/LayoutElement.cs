@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TemplateCooker.Domain.Layout
+namespace TemplateCooking.Domain.Layout
 {
     public class LayoutElement
     {

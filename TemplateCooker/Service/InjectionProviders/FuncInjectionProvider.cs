@@ -1,7 +1,7 @@
 ﻿using System;
-using TemplateCooker.Domain.Injections;
+using TemplateCooking.Domain.Injections;
 
-namespace TemplateCooker.Service.InjectionProviders
+namespace TemplateCooking.Service.InjectionProviders
 {
     public class FuncInjectionProvider : IInjectionProvider
     {

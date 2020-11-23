@@ -1,8 +1,8 @@
 ﻿using PluginAbstraction;
-using TemplateCooker.Domain.Layout;
-using TemplateCooker.Domain.Markers;
+using TemplateCooking.Domain.Layout;
+using TemplateCooking.Domain.Markers;
 
-namespace TemplateCooker.Service.Utils
+namespace TemplateCooking.Service.Utils
 {
     public static class CellUtils
     {

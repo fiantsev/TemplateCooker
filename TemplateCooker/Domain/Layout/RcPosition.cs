@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace TemplateCooker.Domain.Layout
+namespace TemplateCooking.Domain.Layout
 {
     [DebuggerDisplay("RcPosition({RowIndex},{ColumnIndex})")]
     public class RcPosition : IEquatable<RcPosition>

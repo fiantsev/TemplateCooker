@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TemplateCooker.Domain.Markers
+namespace TemplateCooking.Domain.Markers
 {
     public class MarkerRange
     {

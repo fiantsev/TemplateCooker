@@ -1,6 +1,6 @@
 ﻿using PluginAbstraction;
 
-namespace TemplateCooker.Service.OperationExecutors
+namespace TemplateCooking.Service.OperationExecutors
 {
     public abstract class AbstractOperation
     {

@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using TemplateCooker.Domain.Layout;
+using TemplateCooking.Domain.Layout;
 using Xunit;
 
 namespace TemplateCookerUnitTests.Domain.Markers

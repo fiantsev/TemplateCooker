@@ -1,7 +1,7 @@
 ﻿using System;
-using TemplateCooker.Domain.Layout;
+using TemplateCooking.Domain.Layout;
 
-namespace TemplateCooker.Domain.Markers
+namespace TemplateCooking.Domain.Markers
 {
     public class Marker
     {

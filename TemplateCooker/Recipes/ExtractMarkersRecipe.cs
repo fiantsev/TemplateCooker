@@ -1,10 +1,10 @@
 ﻿using PluginAbstraction;
 using System.Collections.Generic;
 using System.Linq;
-using TemplateCooker.Domain.Markers;
-using TemplateCooker.Service.Extraction;
+using TemplateCooking.Domain.Markers;
+using TemplateCooking.Service.Extraction;
 
-namespace TemplateCooker.Recipes
+namespace TemplateCooking.Recipes
 {
     public class ExtractMarkersRecipe
     {

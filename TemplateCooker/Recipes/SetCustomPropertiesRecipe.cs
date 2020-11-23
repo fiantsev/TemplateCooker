@@ -1,6 +1,6 @@
 ﻿using PluginAbstraction;
 
-namespace TemplateCooker.Recipes
+namespace TemplateCooking.Recipes
 {
     public class SetCustomPropertiesRecipe
     {

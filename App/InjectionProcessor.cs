@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using TemplateCooker.Service.OperationExecutors;
-using TemplateCooker.Service.Processing;
-using TemplateCooker.Service.ResourceInjection;
+using TemplateCooking.Service.Processing;
+using TemplateCooking.Service.Processing;
 
 namespace XlsxTemplateReporter
 {
     public class InjectionProcessor : IInjectionProcessor
     {
-        public void Process(List<InjectionContext> injectionStream, List<AbstractOperation> operationStream)
+        public ProcessingStreams Process(ProcessingStreams processingStreams)
         {
-            injectionStream
+            processingStreams.InjectionStream
                 .Select(context => new
                 {
                     Type = context.Injection?.GetType().Name,
@@ -20,9 +18,9 @@ namespace XlsxTemplateReporter
                 .ToList()
                 .ForEach(group => Console.WriteLine($"{group.Key}: {group.Count()}"));
 
-            new DefaultInjectionProcessor().Process(injectionStream, operationStream);
+            var result = new DefaultInjectionProcessor().Process(processingStreams);
 
-            operationStream
+            processingStreams.OperationStream
                 .Select(operation => new
                 {
                     Type = operation?.GetType().FullName,
@@ -30,6 +28,8 @@ namespace XlsxTemplateReporter
                 .GroupBy(x => x.Type)
                 .ToList()
                 .ForEach(group => Console.WriteLine($"{group.Key}: {group.Count()}"));
+
+            return result;
         }
     }
 }

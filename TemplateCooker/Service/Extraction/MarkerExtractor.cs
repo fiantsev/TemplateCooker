@@ -1,11 +1,11 @@
 ﻿using PluginAbstraction;
 using System.Collections;
 using System.Collections.Generic;
-using TemplateCooker.Domain.Layout;
-using TemplateCooker.Domain.Markers;
-using TemplateCooker.Service.Utils;
+using TemplateCooking.Domain.Layout;
+using TemplateCooking.Domain.Markers;
+using TemplateCooking.Service.Utils;
 
-namespace TemplateCooker.Service.Extraction
+namespace TemplateCooking.Service.Extraction
 {
     public class MarkerExtractor : IEnumerable<Marker>
     {

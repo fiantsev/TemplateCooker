@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using TemplateCooker.Service.OperationExecutors;
-using TemplateCooker.Service.ResourceInjection;
+﻿using TemplateCooking.Service.Processing;
 
-namespace TemplateCooker.Service.Processing
+namespace TemplateCooking.Service.Processing
 {
     public interface IInjectionProcessor
     {
@@ -10,6 +8,6 @@ namespace TemplateCooker.Service.Processing
         /// перерабатывает входной поток инъекций в выходной поток операций
         /// например одна инъекция на вставление таблицы может превратиться в несколько операций (непосредственно вставление таблицы и вставление пустых строк при динамическом количестве строк)
         /// </summary>
-        void Process(List<InjectionContext> injectionStream, List<AbstractOperation> operationStream);
+        ProcessingStreams Process(ProcessingStreams processingStreams);
     }
 }

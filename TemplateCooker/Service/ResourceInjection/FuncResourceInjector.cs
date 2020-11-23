@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TemplateCooker.Service.ResourceInjection
+namespace TemplateCooking.Service.ResourceInjection
 {
     public class FuncResourceInjector : IResourceInjector
     {

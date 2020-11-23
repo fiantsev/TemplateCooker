@@ -2,14 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TemplateCooker.Domain.Markers;
-using TemplateCooker.Service.Extraction;
-using TemplateCooker.Service.InjectionProviders;
-using TemplateCooker.Service.OperationExecutors;
-using TemplateCooker.Service.Processing;
-using TemplateCooker.Service.ResourceInjection;
+using TemplateCooking.Service.Processing;
+using TemplateCooking.Domain.Markers;
+using TemplateCooking.Service.Extraction;
+using TemplateCooking.Service.InjectionProviders;
+using TemplateCooking.Service.OperationExecutors;
+using TemplateCooking.Service.Processing;
+using TemplateCooking.Service.ResourceInjection;
 
-namespace TemplateCooker.Recipes
+namespace TemplateCooking.Recipes
 {
     public class InjectRecipe
     {
@@ -66,9 +67,12 @@ namespace TemplateCooker.Recipes
 
         private List<AbstractOperation> ProcessInjections(List<InjectionContext> injectionStream)
         {
-            var operationStream = new List<AbstractOperation>();
-            _options.InjectionProcessor.Process(injectionStream, operationStream);
-            return operationStream;
+            var processingStreams = _options.InjectionProcessor.Process(new ProcessingStreams
+            {
+                InjectionStream = injectionStream,
+                OperationStream = new List<AbstractOperation>(),
+            });
+            return processingStreams.OperationStream;
         }
 
         private void ExecuteInjections(IWorkbookAbstraction workbook, List<AbstractOperation> operations)

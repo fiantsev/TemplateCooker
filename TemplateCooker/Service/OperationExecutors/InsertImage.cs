@@ -1,8 +1,8 @@
 ﻿using PluginAbstraction;
 using System.IO;
-using TemplateCooker.Domain.Layout;
+using TemplateCooking.Domain.Layout;
 
-namespace TemplateCooker.Service.OperationExecutors
+namespace TemplateCooking.Service.OperationExecutors
 {
     public class InsertImage : IOperationExecutor
     {

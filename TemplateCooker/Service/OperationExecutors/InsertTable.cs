@@ -1,9 +1,9 @@
 ﻿using PluginAbstraction;
 using System.Collections.Generic;
 using System.Linq;
-using TemplateCooker.Domain.Layout;
+using TemplateCooking.Domain.Layout;
 
-namespace TemplateCooker.Service.OperationExecutors
+namespace TemplateCooking.Service.OperationExecutors
 {
     public class InsertTable : IOperationExecutor
     {

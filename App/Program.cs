@@ -4,9 +4,9 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
-using TemplateCooker.Domain.Markers;
-using TemplateCooker.Recipes;
-using TemplateCooker.Service.Cooker;
+using TemplateCooking.Domain.Markers;
+using TemplateCooking.Recipes;
+using TemplateCooking.Service.Cooker;
 
 namespace XlsxTemplateReporter
 {
@@ -53,7 +53,7 @@ namespace XlsxTemplateReporter
             Console.WriteLine($"workbook: {file}");
             using var fileStream = File.Open(file.In, FileMode.Open, FileAccess.Read);
 
-            var templateBuilder = new TemplateCooker.Service.Cooker.TemplateCooker(fileStream);
+            var templateBuilder = new TemplateCooker(fileStream);
             var markerOptions = new MarkerOptions("{{", ".", "}}");
 
             //при реальном использование есть необходимость извлечь все маркеры прежде чем двигаться дальше

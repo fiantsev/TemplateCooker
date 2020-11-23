@@ -1,29 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TemplateCooker.Domain.Injections;
-using TemplateCooker.Domain.Layout;
-using TemplateCooker.Domain.Markers;
-using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Service.OperationExecutors;
-using TemplateCooker.Service.ResourceInjection;
-using TemplateCooker.Service.Utils;
+using TemplateCooking.Service.Processing;
+using TemplateCooking.Domain.Injections;
+using TemplateCooking.Domain.Layout;
+using TemplateCooking.Domain.Markers;
+using TemplateCooking.Domain.ResourceObjects;
+using TemplateCooking.Service.OperationExecutors;
+using TemplateCooking.Service.ResourceInjection;
+using TemplateCooking.Service.Utils;
 
-namespace TemplateCooker.Service.Processing
+namespace TemplateCooking.Service.Processing
 {
     public class DefaultInjectionProcessor : IInjectionProcessor
     {
-        public void Process(List<InjectionContext> injectionStream, List<AbstractOperation> operationStream)
+        public ProcessingStreams Process(ProcessingStreams processingStreams)
         {
-            if (injectionStream.Select(x => x.MarkerRange.StartMarker.Position.SheetIndex).Distinct().Count() > 1)
+            if (processingStreams.InjectionStream.Select(x => x.MarkerRange.StartMarker.Position.SheetIndex).Distinct().Count() > 1)
                 throw new Exception("инъекции должны приходить по одному листу");
 
-            InnerProcessLayout(injectionStream, operationStream);
+            InnerProcessLayout(processingStreams);
+
+            return processingStreams;
         }
 
 
-        private void InnerProcessLayout(List<InjectionContext> injectionStream, List<AbstractOperation> operationStream)
+        private void InnerProcessLayout(ProcessingStreams processingStreams)
         {
+            var injectionStream = processingStreams.InjectionStream;
+            var operationStream = processingStreams.OperationStream;
             //при вставление новых строк последующие операции должны смещаться пропорционально
             var previousRowShiftAmountAccumulated = 0;
 

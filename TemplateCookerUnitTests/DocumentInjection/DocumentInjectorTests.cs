@@ -3,11 +3,11 @@ using ClosedXmlPlugin;
 using FluentAssertions;
 using System.Collections.Generic;
 using System.IO;
-using TemplateCooker.Domain.Injections;
-using TemplateCooker.Domain.Markers;
-using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Recipes;
-using TemplateCooker.Service.InjectionProviders;
+using TemplateCooking.Domain.Injections;
+using TemplateCooking.Domain.Markers;
+using TemplateCooking.Domain.ResourceObjects;
+using TemplateCooking.Recipes;
+using TemplateCooking.Service.InjectionProviders;
 using TemplateCookerUnitTests._Helpers;
 using Xunit;
 

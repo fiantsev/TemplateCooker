@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TemplateCooker.Domain.Injections;
-using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Service.InjectionProviders;
+using TemplateCooking.Domain.Injections;
+using TemplateCooking.Domain.ResourceObjects;
+using TemplateCooking.Service.InjectionProviders;
 
 namespace XlsxTemplateReporter
 {

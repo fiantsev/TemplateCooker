@@ -1,7 +1,7 @@
 ﻿using System;
-using TemplateCooker.Domain.ResourceObjects;
+using TemplateCooking.Domain.ResourceObjects;
 
-namespace TemplateCooker.Domain.Layout
+namespace TemplateCooking.Domain.Layout
 {
     public class LayoutShiftIntent
     {
