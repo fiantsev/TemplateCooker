@@ -1,6 +1,6 @@
 ﻿namespace TemplateCooker.Domain.Injections
 {
-    public class Injection
+    public abstract class Injection
     {
     }
 }

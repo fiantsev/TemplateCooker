@@ -1,27 +1,26 @@
 ﻿using PluginAbstraction;
 using TemplateCooker.Domain.Layout;
 
-namespace TemplateCooker.Service.Operations
+namespace TemplateCooker.Service.OperationExecutors
 {
-    public class InsertEmptyRows : IOperationExecutor
+    public class InsertText : IOperationExecutor
     {
         public class Operation : AbstractOperation
         {
-            public int RowsCount { get; set; }
-            public SrPosition Position { get; set; }
+            public SrcPosition Position { get; set; }
+            public string Text { get; set; }
         }
 
         public void Execute(IWorkbookAbstraction workbook, object untypedOptions)
         {
             var options = (Operation)untypedOptions;
 
-            if (options.RowsCount < 1)
-                return;
-
-            workbook
+            var cell = workbook
                 .GetSheet(options.Position.SheetIndex)
                 .GetRow(options.Position.RowIndex)
-                .InsertRowsBelow(options.RowsCount);
+                .GetCell(options.Position.ColumnIndex);
+
+            cell.SetValue(options.Text);
         }
     }
 }

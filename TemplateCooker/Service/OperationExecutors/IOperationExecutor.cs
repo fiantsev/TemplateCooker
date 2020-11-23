@@ -1,6 +1,6 @@
 ﻿using PluginAbstraction;
 
-namespace TemplateCooker.Service.Operations
+namespace TemplateCooker.Service.OperationExecutors
 {
     public interface IOperationExecutor
     {

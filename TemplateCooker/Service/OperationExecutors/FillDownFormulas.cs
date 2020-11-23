@@ -2,7 +2,7 @@
 using System.Linq;
 using TemplateCooker.Domain.Layout;
 
-namespace TemplateCooker.Service.Operations
+namespace TemplateCooker.Service.OperationExecutors
 {
     public class FillDownFormulas : IOperationExecutor
     {

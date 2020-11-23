@@ -2,7 +2,7 @@
 using System.IO;
 using TemplateCooker.Domain.Layout;
 
-namespace TemplateCooker.Service.Operations
+namespace TemplateCooker.Service.OperationExecutors
 {
     public class InsertImage : IOperationExecutor
     {

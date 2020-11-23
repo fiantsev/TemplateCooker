@@ -6,7 +6,7 @@ using System.IO;
 using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Recipes;
-using TemplateCooker.Service.Builders;
+using TemplateCooker.Service.Cooker;
 
 namespace XlsxTemplateReporter
 {
@@ -53,7 +53,7 @@ namespace XlsxTemplateReporter
             Console.WriteLine($"workbook: {file}");
             using var fileStream = File.Open(file.In, FileMode.Open, FileAccess.Read);
 
-            var templateBuilder = new TemplateBuilder(fileStream);
+            var templateBuilder = new TemplateCooker.Service.Cooker.TemplateCooker(fileStream);
             var markerOptions = new MarkerOptions("{{", ".", "}}");
 
             //при реальном использование есть необходимость извлечь все маркеры прежде чем двигаться дальше

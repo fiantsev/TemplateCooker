@@ -5,8 +5,7 @@ using System.Linq;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Service.Extraction;
 using TemplateCooker.Service.InjectionProviders;
-using TemplateCooker.Service.Layout;
-using TemplateCooker.Service.Operations;
+using TemplateCooker.Service.OperationExecutors;
 using TemplateCooker.Service.Processing;
 using TemplateCooker.Service.ResourceInjection;
 
@@ -17,7 +16,6 @@ namespace TemplateCooker.Recipes
         public class Options
         {
             public IWorkbookAbstraction Workbook { get; set; }
-            //public IResourceInjector ResourceInjector { get; set; }
             public IInjectionProcessor InjectionProcessor { get; set; }
             public IInjectionProvider InjectionProvider { get; set; }
             public MarkerOptions MarkerOptions { get; set; }

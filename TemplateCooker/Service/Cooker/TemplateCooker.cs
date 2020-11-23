@@ -5,13 +5,13 @@ using System.IO;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Recipes;
 
-namespace TemplateCooker.Service.Builders
+namespace TemplateCooker.Service.Cooker
 {
-    public class TemplateBuilder
+    public class TemplateCooker
     {
         private IWorkbookAbstraction _workbook;
 
-        public TemplateBuilder(Stream workbookStream)
+        public TemplateCooker(Stream workbookStream)
         {
             workbookStream.Position = 0;
             var plugin = new ClosedXmlPluginImplementation();
@@ -25,14 +25,14 @@ namespace TemplateCooker.Service.Builders
             return markers;
         }
 
-        public TemplateBuilder InjectData(InjectRecipe.Options options)
+        public TemplateCooker InjectData(InjectRecipe.Options options)
         {
             options.Workbook = _workbook;
             new InjectRecipe(options).Cook();
             return this;
         }
 
-        public TemplateBuilder SetCustomProperties(SetCustomPropertiesRecipe.Options options)
+        public TemplateCooker SetCustomProperties(SetCustomPropertiesRecipe.Options options)
         {
             options.Workbook = _workbook;
             new SetCustomPropertiesRecipe(options).Cook();

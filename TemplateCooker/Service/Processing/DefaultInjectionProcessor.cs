@@ -5,7 +5,7 @@ using TemplateCooker.Domain.Injections;
 using TemplateCooker.Domain.Layout;
 using TemplateCooker.Domain.Markers;
 using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Service.Operations;
+using TemplateCooker.Service.OperationExecutors;
 using TemplateCooker.Service.ResourceInjection;
 using TemplateCooker.Service.Utils;
 
