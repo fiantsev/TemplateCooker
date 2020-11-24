@@ -32,8 +32,8 @@ namespace XlsxTemplateReporter
                 //"two-markers-on-one-column",
                 //"two-markers-on-one-row",
                 //"one-marker",
-                //"real-project-report",
-                "_current",
+                "real-project-report",
+                //"_current2",
             };
             var files = templates
                 .Select(x => new InOut
@@ -50,7 +50,7 @@ namespace XlsxTemplateReporter
 
         static void TreatFile(InOut file)
         {
-            Console.WriteLine($"workbook: {file}");
+            Console.WriteLine($"workbook: {file.In}");
             using var fileStream = File.Open(file.In, FileMode.Open, FileAccess.Read);
 
             var templateBuilder = new TemplateCooker(fileStream);
@@ -91,7 +91,8 @@ namespace XlsxTemplateReporter
             using var fileStream = File.Open(file.In, FileMode.Open, FileAccess.Read);
 
             var workbook = new XLWorkbook(fileStream);
-            workbook.Worksheet(1).Row(2).Cell(2).CopyTo(workbook.Worksheet(1).Row(3).Cell(2));
+            var range = workbook.Worksheet(1).Range("A1:D2");
+            range.CopyTo(workbook.Worksheet(1).Row(3).Cell(1));
 
             //workbook.CalculationOnSave = true;
             using (var outputFileStream = File.Open(file.Out, FileMode.Create, FileAccess.ReadWrite))

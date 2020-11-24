@@ -28,7 +28,6 @@ namespace TemplateCooking.Service.OperationExecutors
             if (rowCount == 0 || columnCount == 0)
                 topLeftCell.SetValue(string.Empty);
 
-            //if (tableInjection.LayoutShift == LayoutShiftType.MoveRows)
             //здесь мы копируем контент первой строки ниже - чтобы стили ячеек (включая смердженные регионы) скопировались
             if(options.PreserveStyleOfFirstCell)
                 CloneFirstRowBelow(sheet, topLeftCell, rowCount, columnCount);
@@ -39,7 +38,8 @@ namespace TemplateCooking.Service.OperationExecutors
             {
                 var rowIndex = cellCounter / columnCount;
                 var columnIndex = cellCounter % columnCount;
-                cell.SetValue(table[rowIndex][columnIndex]);
+                var value = table[rowIndex][columnIndex];
+                cell.SetValue(value);
                 ++cellCounter;
             }
         }
@@ -50,13 +50,18 @@ namespace TemplateCooking.Service.OperationExecutors
             if (rowCount == 0 || columnCount == 0)
                 return;
 
-            var firstRowMergedCells = topLeftCell.GetMergedCells(1, columnCount).ToList();
-            var firstCellHeight = firstRowMergedCells.First().GetMergedRange().Height;
-            var range = sheet.GetRange(firstRowMergedCells.First(), firstRowMergedCells.Last().GetMergedRange().BottomRightCell());
+            var topLeftCellHeight = topLeftCell.GetMergedRange().Height;
+            var bottomRightCell = topLeftCell.GetMergedCells(1, columnCount).Last().GetMergedRange().BottomRightCell();
+            var range = sheet.GetRange(topLeftCell, bottomRightCell);
+
+            //обработка кейса: если первая ячейка смердженная а последняя нет
+            //область для копирования составляем по высоте первой ячейки
+            if (topLeftCellHeight > range.Height)
+                range = sheet.GetRange(topLeftCell, sheet.GetRow(topLeftCell.RowIndex + topLeftCellHeight - 1).GetCell(bottomRightCell.ColumnIndex));
 
             for (var i = 1; i < rowCount; ++i)
             {
-                var toCell = sheet.GetRow(topLeftCell.RowIndex + i * firstCellHeight).GetCell(topLeftCell.ColumnIndex);
+                var toCell = sheet.GetRow(topLeftCell.RowIndex + i * topLeftCellHeight).GetCell(topLeftCell.ColumnIndex);
                 range.CopyTo(toCell);
             }
         }

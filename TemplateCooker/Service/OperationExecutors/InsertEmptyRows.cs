@@ -18,10 +18,8 @@ namespace TemplateCooking.Service.OperationExecutors
             if (options.RowsCount < 1)
                 return;
 
-            workbook
-                .GetSheet(options.Position.SheetIndex)
-                .GetRow(options.Position.RowIndex)
-                .InsertRowsBelow(options.RowsCount);
+            var row = workbook.GetSheet(options.Position.SheetIndex).GetRow(options.Position.RowIndex);
+            row.InsertRowsBelow(options.RowsCount);
         }
     }
 }

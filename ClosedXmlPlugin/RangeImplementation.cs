@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace ClosedXmlPlugin
 {
-    [DebuggerDisplay("_range")]
+    [DebuggerDisplay("{_range}")]
     public class RangeImplementation : IRangeAbstraction
     {
         private readonly IXLRange _range;
