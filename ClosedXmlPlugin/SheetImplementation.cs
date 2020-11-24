@@ -39,5 +39,10 @@ namespace ClosedXmlPlugin
         public void Dispose()
         {
         }
+        public IRangeAbstraction GetRange(ICellAbstraction from, ICellAbstraction to)
+        {
+            var range = _sheet.Range(from.RowIndex + 1, from.ColumnIndex + 1, to.RowIndex + 1, to.ColumnIndex + 1);
+            return new RangeImplementation(range);
+        }
     }
 }

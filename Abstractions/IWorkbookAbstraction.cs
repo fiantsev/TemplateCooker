@@ -12,5 +12,7 @@ namespace PluginAbstraction
 
         void SetCustomProperties(CustomProperties customProperties);
         void Save(Stream stream);
+
+        ISheetAbstraction AddSheet(string name);
     }
 }

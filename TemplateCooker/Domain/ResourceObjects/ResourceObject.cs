@@ -1,6 +1,6 @@
-﻿namespace TemplateCooker.Domain.ResourceObjects
+﻿namespace TemplateCooking.Domain.ResourceObjects
 {
-    public class ResourceObject
+    public abstract class ResourceObject
     {
     }
 }

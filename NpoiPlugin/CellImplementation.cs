@@ -87,5 +87,15 @@ namespace NpoiPlugin
         public void Dispose()
         {
         }
+
+        public void Copy(ICellAbstraction cell)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IRangeAbstraction GetMergedRange()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

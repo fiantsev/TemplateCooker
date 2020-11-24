@@ -1,8 +1,8 @@
 ﻿using PluginAbstraction;
-using TemplateCooker.Domain.Injections;
-using TemplateCooker.Domain.Markers;
+using TemplateCooking.Domain.Injections;
+using TemplateCooking.Domain.Markers;
 
-namespace TemplateCooker.Service.ResourceInjection
+namespace TemplateCooking.Service.ResourceInjection
 {
     public class InjectionContext
     {
@@ -13,6 +13,9 @@ namespace TemplateCooker.Service.ResourceInjection
         public string Guid { get; }
         public MarkerRange MarkerRange { get; set; }
         public Injection Injection { get; set; }
+        /// <summary>
+        /// TODO: убрать workbook отсюда и перенести в другой класс, workbook будет загружаться в последний момент
+        /// </summary>
         public IWorkbookAbstraction Workbook { get; set; }
     }
 }

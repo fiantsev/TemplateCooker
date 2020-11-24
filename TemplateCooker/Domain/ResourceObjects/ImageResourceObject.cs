@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TemplateCooker.Domain.ResourceObjects
+namespace TemplateCooking.Domain.ResourceObjects
 {
     public class ImageResourceObject : ResourceObject
     {

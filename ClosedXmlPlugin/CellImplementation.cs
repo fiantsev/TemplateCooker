@@ -8,7 +8,7 @@ namespace ClosedXmlPlugin
     [DebuggerDisplay("{_cell}")]
     public class CellImplementation : ICellAbstraction
     {
-        private IXLCell _cell;
+        protected IXLCell _cell;
 
         public int RowIndex => _cell.Address.RowNumber - 1;
 
@@ -85,6 +85,20 @@ namespace ClosedXmlPlugin
 
         public void Dispose()
         {
+        }
+
+        public void Copy(ICellAbstraction cell)
+        {
+            var innerCell = (cell as CellImplementation)._cell;
+            _cell.CopyTo(innerCell);
+        }
+
+        public IRangeAbstraction GetMergedRange()
+        {
+            var range = _cell.IsMerged()
+                ? _cell.MergedRange()
+                : _cell.Worksheet.Range(_cell, _cell);
+            return new RangeImplementation(range);
         }
     }
 }

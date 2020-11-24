@@ -63,5 +63,10 @@ namespace ClosedXmlPlugin
         {
             _workbook.Dispose();
         }
+
+        public ISheetAbstraction AddSheet(string name)
+        {
+            return new SheetImplementation(_workbook.AddWorksheet(name));
+        }
     }
 }

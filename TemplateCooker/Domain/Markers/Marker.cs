@@ -1,25 +1,29 @@
-﻿namespace TemplateCooker.Domain.Markers
+﻿using System;
+using TemplateCooking.Domain.Layout;
+
+namespace TemplateCooking.Domain.Markers
 {
     public class Marker
     {
-        public string Id { get; set; }
-        public MarkerPosition Position { get; set; }
-        public MarkerType MarkerType { get; set; }
+        public Marker(string id, SrcPosition position, MarkerType markerType)
+        {
+            Id = id ?? throw new ArgumentNullException(nameof(id));
+            Position = position ?? throw new ArgumentNullException(nameof(position));
+            MarkerType = markerType;
+        }
+
+        public string Id { get; }
+        public SrcPosition Position { get; }
+        public MarkerType MarkerType { get; }
 
         public Marker Clone()
         {
-            return new Marker
-            {
-                Id = Id,
-                MarkerType = MarkerType,
-                Position = new MarkerPosition
-                {
-                    SheetIndex = Position.SheetIndex,
-                    RowIndex = Position.RowIndex,
-                    ColumnIndex = Position.ColumnIndex,
-                }
-            };
+            return new Marker(Id, Position, MarkerType);
         }
 
+        public Marker WithShift(int rowShift = 0, int columnShift = 0)
+        {
+            return new Marker(Id, Position.WithShift(rowShift, columnShift), MarkerType);
+        }
     }
 }

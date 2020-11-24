@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TemplateCooker.Domain.Injections;
-using TemplateCooker.Domain.ResourceObjects;
-using TemplateCooker.Service.InjectionProviders;
+using TemplateCooking.Domain.Injections;
+using TemplateCooking.Domain.ResourceObjects;
+using TemplateCooking.Service.InjectionProviders;
 
 namespace XlsxTemplateReporter
 {
@@ -22,13 +22,31 @@ namespace XlsxTemplateReporter
                     }
                 case "table2":
                     {
-                        var resource = GetResourceObjectStorage()["tableOfIntX3"];
+                        var resource = GetResourceObjectStorage()["tableOfInt"];
                         return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
 
                     }
                 case "table3":
                     {
-                        var resource = GetResourceObjectStorage()["tableOfInt"];
+                        var resource = GetResourceObjectStorage()["tableOneColumnOfInt"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
+
+                    }
+                case "table4":
+                    {
+                        var resource = GetResourceObjectStorage()["tableOneColumnOfInt"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.None };
+
+                    }
+                case "table5":
+                    {
+                        var resource = GetResourceObjectStorage()["tableOneColumnOf2Int"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
+
+                    }
+                case "table6":
+                    {
+                        var resource = GetResourceObjectStorage()["tableOneColumnOf3Int"];
                         return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows };
 
                     }
@@ -72,12 +90,37 @@ namespace XlsxTemplateReporter
                 new List<object> { true, null, "1", 2, 3.0, (long)4, 5.0f },
             };
 
+            var tableOneColumnOfInt = new List<List<object>>
+            {
+                new List<object> { 1 },
+                new List<object> { 2 },
+                new List<object> { 3 },
+                new List<object> { 4 },
+                new List<object> { 5 },
+            };
+
+            var tableOneColumnOf2Int = new List<List<object>>
+            {
+                new List<object> { 1 },
+                new List<object> { 2 },
+            };
+
+            var tableOneColumnOf3Int = new List<List<object>>
+            {
+                new List<object> { 1 },
+                new List<object> { 2 },
+                new List<object> { 3 },
+            };
+
             var dictionary = new Dictionary<string, ResourceObject>
             {
                 { nameof(tableOfInt), new TableResourceObject(tableOfInt) },
                 { nameof(tableOfString), new TableResourceObject(tableOfString) },
                 { nameof(tableOfObjects), new TableResourceObject(tableOfObjects) },
                 { nameof(tableOfIntX3), new TableResourceObject(tableOfIntX3) },
+                { nameof(tableOneColumnOfInt), new TableResourceObject(tableOneColumnOfInt) },
+                { nameof(tableOneColumnOf2Int), new TableResourceObject(tableOneColumnOf2Int) },
+                { nameof(tableOneColumnOf3Int), new TableResourceObject(tableOneColumnOf3Int) },
             };
 
 

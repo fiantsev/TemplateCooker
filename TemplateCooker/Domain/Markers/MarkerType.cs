@@ -1,4 +1,4 @@
-﻿namespace TemplateCooker.Domain.Markers
+﻿namespace TemplateCooking.Domain.Markers
 {
     public enum MarkerType
     {

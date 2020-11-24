@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace TemplateCooker.Domain.Markers
+namespace TemplateCooking.Domain.Markers
 {
     public class MarkerRangeCollection : IEnumerable<MarkerRange>
     {

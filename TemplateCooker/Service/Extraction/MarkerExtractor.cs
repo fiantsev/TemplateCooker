@@ -1,12 +1,13 @@
 ﻿using PluginAbstraction;
 using System.Collections;
 using System.Collections.Generic;
-using TemplateCooker.Domain.Markers;
-using TemplateCooker.Service.Utils;
+using TemplateCooking.Domain.Layout;
+using TemplateCooking.Domain.Markers;
+using TemplateCooking.Service.Utils;
 
-namespace TemplateCooker.Service.Extraction
+namespace TemplateCooking.Service.Extraction
 {
-    public class MarkerExtractor : IMarkerExtractor, IEnumerable<Marker>
+    public class MarkerExtractor : IEnumerable<Marker>
     {
         private readonly IEnumerable<ISheetAbstraction> _sheets;
         private readonly MarkerOptions _markerOptions;
@@ -46,19 +47,13 @@ namespace TemplateCooker.Service.Extraction
                         if (markerId == null)
                             continue;
                         var isEndMarker = markerId.Substring(0, _markerOptions.Terminator.Length) == _markerOptions.Terminator;
-                        var marker = new Marker
-                        {
-                            Id = isEndMarker
+                        var marker = new Marker(
+                            id: isEndMarker
                                 ? markerId.Substring(_markerOptions.Terminator.Length)
                                 : markerId,
-                            Position = new MarkerPosition
-                            {
-                                SheetIndex = sheet.SheetIndex,
-                                RowIndex = row.FirstCell().RowIndex,
-                                ColumnIndex = cell.ColumnIndex
-                            },
-                            MarkerType = isEndMarker ? MarkerType.End : MarkerType.Start
-                        };
+                            position: new SrcPosition(sheet.SheetIndex, row.FirstCell().RowIndex, cell.ColumnIndex),
+                            markerType: isEndMarker ? MarkerType.End : MarkerType.Start
+                        );
                         yield return marker;
                     }
                 }

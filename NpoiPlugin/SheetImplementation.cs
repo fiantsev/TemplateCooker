@@ -48,5 +48,10 @@ namespace NpoiPlugin
         public void Dispose()
         {
         }
+
+        public IRangeAbstraction GetRange(ICellAbstraction from, ICellAbstraction to)
+        {
+            throw new System.NotImplementedException();
+        }
     }
 }

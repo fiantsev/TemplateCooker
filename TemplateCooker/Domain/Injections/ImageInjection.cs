@@ -1,6 +1,6 @@
-﻿using TemplateCooker.Domain.ResourceObjects;
+﻿using TemplateCooking.Domain.ResourceObjects;
 
-namespace TemplateCooker.Domain.Injections
+namespace TemplateCooking.Domain.Injections
 {
     public class ImageInjection : Injection
     {
