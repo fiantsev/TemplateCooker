@@ -21,7 +21,7 @@ namespace TemplateCooking.Service.OperationExecutors
 
             var rowToCheckFormulas = sheet.GetRow(from.RowIndex);
 
-            var cellsWithFormula = rowToCheckFormulas.GetUsedCells().Where(x => x.HasFormula).ToList();
+            var cellsWithFormula = rowToCheckFormulas.GetUsedCells(false).Where(x => x.HasFormula).ToList();
 
             for (var rowIndex = from.RowIndex + 1; rowIndex <= to.RowIndex; ++rowIndex)
             {

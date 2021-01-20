@@ -42,14 +42,20 @@ namespace TemplateCooking.Service.Processing
                     var sheetIndex = firstContext.MarkerRange.StartMarker.Position.SheetIndex;
                     var rowIndex = firstContext.MarkerRange.StartMarker.Position.RowIndex;
 
-                    var (rowCountToInsert, rowToInsertPosition) = FindHowMuchNewEmptyRowsToInsertAndWhere(contextsOnSameRow.ToList());
+                    //HACK: refactoring
+                    var (rowCountToInsert, rowToInsertPosition, startMarkerPosition, pasteCount) = FindHowMuchNewEmptyRowsToInsertAndWhere(contextsOnSameRow.ToList());
 
                     if (rowCountToInsert > 0)
                     {
                         operationStream.Add(new InsertEmptyRows.Operation { Position = rowToInsertPosition.ToSrPosition().WithShift(previousRowShiftAmountAccumulated), RowsCount = rowCountToInsert });
+                        operationStream.Add(new CopyPasteRowRange.Operation {
+                            CopyFromRow = new SrPosition(sheetIndex, startMarkerPosition.RowIndex + previousRowShiftAmountAccumulated),
+                            CopyToRow = new SrPosition(sheetIndex, startMarkerPosition.RowIndex + workbook.GetCell(startMarkerPosition).GetMergedRange().Height - 1 + previousRowShiftAmountAccumulated),
+                            PasteStartRow = rowToInsertPosition.ToSrPosition().WithShift(previousRowShiftAmountAccumulated+1),
+                            PasteCount = pasteCount,
+                        });
                         operationStream.AddRange(contextsOnSameRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(previousRowShiftAmountAccumulated))));
-                        operationStream.Add(new FillDownFormulas.Operation { From = new SrPosition(sheetIndex, rowIndex + previousRowShiftAmountAccumulated), To = new SrPosition(sheetIndex, rowIndex + rowCountToInsert + previousRowShiftAmountAccumulated) });
-
+                        //operationStream.Add(new FillDownFormulas.Operation { From = new SrPosition(sheetIndex, rowIndex + previousRowShiftAmountAccumulated), To = new SrPosition(sheetIndex, rowIndex + rowCountToInsert + previousRowShiftAmountAccumulated) });
                         previousRowShiftAmountAccumulated += rowCountToInsert;
                     }
                     else
@@ -59,7 +65,8 @@ namespace TemplateCooking.Service.Processing
                 });
         }
 
-        private (int, SrcPosition) FindHowMuchNewEmptyRowsToInsertAndWhere(List<InjectionContext> contexts)
+        //HACK: refactoring return type to seprate class
+        private (int, SrcPosition, SrcPosition, int) FindHowMuchNewEmptyRowsToInsertAndWhere(List<InjectionContext> contexts)
         {
             var tables = contexts
                 .Where(x =>
@@ -81,11 +88,11 @@ namespace TemplateCooking.Service.Processing
                 .FirstOrDefault();
 
             if (max == null)
-                return (0, null);
+                return (0, null, null, 0);
 
             var countOfNewRowsToInsert = Math.Max(0, max.RowCount - 1) * max.StartMarkerCellHeight;
             var positionToInsertNewRows = max.Context.MarkerRange.StartMarker.Position.WithShift(max.StartMarkerCellHeight - 1, 0);
-            return (countOfNewRowsToInsert, positionToInsertNewRows);
+            return (countOfNewRowsToInsert, positionToInsertNewRows, max.Context.MarkerRange.StartMarker.Position, max.RowCount - 1 );
         }
 
         private AbstractOperation ConvertToOperation(Injection injection, MarkerRange markerRange)

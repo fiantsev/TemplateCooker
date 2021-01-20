@@ -17,9 +17,9 @@ namespace TemplateCooking.Recipes
             _options = options;
         }
 
-        public void Cook()
+        public void Cook(IWorkbookAbstraction workbook)
         {
-            _options.Workbook.SetCustomProperties(_options.CustomProperties);
+            workbook.SetCustomProperties(_options.CustomProperties);
         }
     }
 }

@@ -32,8 +32,9 @@ namespace XlsxTemplateReporter
                 //"two-markers-on-one-column",
                 //"two-markers-on-one-row",
                 //"one-marker",
-                "real-project-report",
-                //"_current2",
+                //"real-project-report",
+                "_current",
+                "0503151_fss",
             };
             var files = templates
                 .Select(x => new InOut

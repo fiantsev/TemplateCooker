@@ -7,7 +7,6 @@ using TemplateCooking.Domain.Markers;
 using TemplateCooking.Service.Extraction;
 using TemplateCooking.Service.InjectionProviders;
 using TemplateCooking.Service.OperationExecutors;
-using TemplateCooking.Service.Processing;
 using TemplateCooking.Service.ResourceInjection;
 
 namespace TemplateCooking.Recipes
@@ -16,7 +15,6 @@ namespace TemplateCooking.Recipes
     {
         public class Options
         {
-            public IWorkbookAbstraction Workbook { get; set; }
             public IInjectionProcessor InjectionProcessor { get; set; }
             public IInjectionProvider InjectionProvider { get; set; }
             public MarkerOptions MarkerOptions { get; set; }
@@ -31,15 +29,8 @@ namespace TemplateCooking.Recipes
             _options = options;
         }
 
-        public void Cook()
+        public void Cook(IWorkbookAbstraction workbook)
         {
-            InjectDataSheetBySheet();
-        }
-
-        public void InjectDataSheetBySheet()
-        {
-            IWorkbookAbstraction workbook = _options.Workbook;
-
             foreach (var sheet in workbook.GetSheets())
             {
                 var injectionContexts = GenerateInjections(workbook, sheet);
@@ -89,6 +80,7 @@ namespace TemplateCooking.Recipes
             switch (operation)
             {
                 case FillDownFormulas.Operation _: return new FillDownFormulas();
+                case CopyPasteRowRange.Operation _: return new CopyPasteRowRange();
                 case InsertEmptyRows.Operation _: return new InsertEmptyRows();
                 case InsertImage.Operation _: return new InsertImage();
                 case InsertTable.Operation _: return new InsertTable();

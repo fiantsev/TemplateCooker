@@ -5,12 +5,25 @@ using TemplateCooking.Domain.Layout;
 
 namespace TemplateCooking.Service.OperationExecutors
 {
+    /// <summary>
+    /// Вставить табличные данные в указанную ячейку
+    /// </summary>
     public class InsertTable : IOperationExecutor
     {
         public class Operation : AbstractOperation
         {
+            /// <summary>
+            /// позиция верхней левой ячейки начиная с которой будет располагаться таблица
+            /// </summary>
             public SrcPosition Position { get; set; }
+            /// <summary>
+            /// данные таблицы
+            /// </summary>
             public List<List<object>> Table { get; set; }
+            /// <summary>
+            /// Применить стили ячеек первой строки ко всем последующим ячейкам (в строках ниже).
+            /// Может использоваться при вставление таблиц с динамическим количеством строк
+            /// </summary>
             public bool PreserveStyleOfFirstCell { get; set; }
         }
 

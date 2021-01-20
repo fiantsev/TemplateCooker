@@ -10,7 +10,6 @@ namespace TemplateCooking.Recipes
     {
         public class Options
         {
-            public IWorkbookAbstraction Workbook { get; set; }
             public MarkerOptions MarkerOptions { get; set; }
         }
 
@@ -21,14 +20,10 @@ namespace TemplateCooking.Recipes
             _options = options;
         }
 
-        public List<Marker> Cook()
+        public List<Marker> Cook(IWorkbookAbstraction workbook)
         {
-            return GetMarkerRanges();
-        }
-
-        private List<Marker> GetMarkerRanges()
-        {
-            return new MarkerExtractor(_options.Workbook, _options.MarkerOptions).GetMarkers().ToList();
+            var result =  new MarkerExtractor(workbook, _options.MarkerOptions).GetMarkers().ToList();
+            return result;
         }
     }
 }
