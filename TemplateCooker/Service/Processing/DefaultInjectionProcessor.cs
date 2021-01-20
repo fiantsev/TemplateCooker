@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using TemplateCooking.Service.Processing;
 using TemplateCooking.Domain.Injections;
 using TemplateCooking.Domain.Layout;
 using TemplateCooking.Domain.Markers;
@@ -9,23 +8,24 @@ using TemplateCooking.Domain.ResourceObjects;
 using TemplateCooking.Service.OperationExecutors;
 using TemplateCooking.Service.ResourceInjection;
 using TemplateCooking.Service.Utils;
+using PluginAbstraction;
 
 namespace TemplateCooking.Service.Processing
 {
     public class DefaultInjectionProcessor : IInjectionProcessor
     {
-        public ProcessingStreams Process(ProcessingStreams processingStreams)
+        public ProcessingStreams Process(IWorkbookAbstraction workbook,  ProcessingStreams processingStreams)
         {
             if (processingStreams.InjectionStream.Select(x => x.MarkerRange.StartMarker.Position.SheetIndex).Distinct().Count() > 1)
                 throw new Exception("инъекции должны приходить по одному листу");
 
-            InnerProcessLayout(processingStreams);
+            InnerProcessLayout(workbook, processingStreams);
 
             return processingStreams;
         }
 
 
-        private void InnerProcessLayout(ProcessingStreams processingStreams)
+        private void InnerProcessLayout(IWorkbookAbstraction workbook, ProcessingStreams processingStreams)
         {
             var injectionStream = processingStreams.InjectionStream;
             var operationStream = processingStreams.OperationStream;
@@ -38,12 +38,11 @@ namespace TemplateCooking.Service.Processing
                 .ForEach(contextsOnSameRow =>
                 {
                     var firstContext = contextsOnSameRow.First();
-                    var workbook = firstContext.Workbook;
                     var sheetIndex = firstContext.MarkerRange.StartMarker.Position.SheetIndex;
                     var rowIndex = firstContext.MarkerRange.StartMarker.Position.RowIndex;
 
                     //HACK: refactoring
-                    var (rowCountToInsert, rowToInsertPosition, startMarkerPosition, pasteCount) = FindHowMuchNewEmptyRowsToInsertAndWhere(contextsOnSameRow.ToList());
+                    var (rowCountToInsert, rowToInsertPosition, startMarkerPosition, pasteCount) = FindHowMuchNewEmptyRowsToInsertAndWhere(workbook, contextsOnSameRow.ToList());
 
                     if (rowCountToInsert > 0)
                     {
@@ -66,7 +65,7 @@ namespace TemplateCooking.Service.Processing
         }
 
         //HACK: refactoring return type to seprate class
-        private (int, SrcPosition, SrcPosition, int) FindHowMuchNewEmptyRowsToInsertAndWhere(List<InjectionContext> contexts)
+        private (int, SrcPosition, SrcPosition, int) FindHowMuchNewEmptyRowsToInsertAndWhere(IWorkbookAbstraction workbook, List<InjectionContext> contexts)
         {
             var tables = contexts
                 .Where(x =>
@@ -79,7 +78,7 @@ namespace TemplateCooking.Service.Processing
                 .Select(x => new
                 {
                     Context = x,
-                    StartMarkerCellHeight = x.Workbook.GetCell(x.MarkerRange.StartMarker.Position).GetMergedRange().Height,
+                    StartMarkerCellHeight = workbook.GetCell(x.MarkerRange.StartMarker.Position).GetMergedRange().Height,
                     RowCount = (x.Injection as TableInjection).Resource.Object.Count
                 });
 

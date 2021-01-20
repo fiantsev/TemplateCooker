@@ -1,4 +1,4 @@
-﻿using TemplateCooking.Service.Processing;
+﻿using PluginAbstraction;
 
 namespace TemplateCooking.Service.Processing
 {
@@ -8,6 +8,6 @@ namespace TemplateCooking.Service.Processing
         /// перерабатывает входной поток инъекций в выходной поток операций
         /// например одна инъекция на вставление таблицы может превратиться в несколько операций (непосредственно вставление таблицы и вставление пустых строк при динамическом количестве строк)
         /// </summary>
-        ProcessingStreams Process(ProcessingStreams processingStreams);
+        ProcessingStreams Process(IWorkbookAbstraction workbook, ProcessingStreams processingStreams);
     }
 }

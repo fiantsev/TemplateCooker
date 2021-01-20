@@ -34,7 +34,6 @@ namespace XlsxTemplateReporter
                 //"one-marker",
                 //"real-project-report",
                 "_current",
-                "0503151_fss",
             };
             var files = templates
                 .Select(x => new InOut

@@ -2,12 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TemplateCooking.Service.Processing;
+using TemplateCooking.Domain.Injections;
 using TemplateCooking.Domain.Markers;
 using TemplateCooking.Service.Extraction;
 using TemplateCooking.Service.InjectionProviders;
 using TemplateCooking.Service.OperationExecutors;
-using TemplateCooking.Service.ResourceInjection;
+using TemplateCooking.Service.Processing;
 
 namespace TemplateCooking.Recipes
 {
@@ -34,7 +34,7 @@ namespace TemplateCooking.Recipes
             foreach (var sheet in workbook.GetSheets())
             {
                 var injectionContexts = GenerateInjections(workbook, sheet);
-                var processedInjectionContexts = ProcessInjections(injectionContexts);
+                var processedInjectionContexts = ProcessInjections(workbook, injectionContexts);
                 ExecuteInjections(workbook, processedInjectionContexts);
             }
         }
@@ -50,19 +50,17 @@ namespace TemplateCooking.Recipes
                 {
                     MarkerRange = markerRange,
                     Injection = _options.InjectionProvider.Resolve(markerRange.StartMarker.Id),
-                    Workbook = workbook
                 });
 
             return injections.ToList();
         }
 
-        private List<AbstractOperation> ProcessInjections(List<InjectionContext> injectionStream)
+        private List<AbstractOperation> ProcessInjections(IWorkbookAbstraction workbook, List<InjectionContext> injectionStream)
         {
-            var processingStreams = _options.InjectionProcessor.Process(new ProcessingStreams
-            {
-                InjectionStream = injectionStream,
-                OperationStream = new List<AbstractOperation>(),
-            });
+            var processingStreams = _options.InjectionProcessor.Process(
+                workbook,
+                new ProcessingStreams { InjectionStream = injectionStream, OperationStream = new List<AbstractOperation>() }
+            );
             return processingStreams.OperationStream;
         }
 

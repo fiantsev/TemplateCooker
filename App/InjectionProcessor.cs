@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PluginAbstraction;
+using System;
 using System.Linq;
 using TemplateCooking.Service.Processing;
 
@@ -6,7 +7,7 @@ namespace XlsxTemplateReporter
 {
     public class InjectionProcessor : IInjectionProcessor
     {
-        public ProcessingStreams Process(ProcessingStreams processingStreams)
+        public ProcessingStreams Process(IWorkbookAbstraction workbook, ProcessingStreams processingStreams)
         {
             processingStreams.InjectionStream
                 .Select(context => new
@@ -17,7 +18,7 @@ namespace XlsxTemplateReporter
                 .ToList()
                 .ForEach(group => Console.WriteLine($"{group.Key}: {group.Count()}"));
 
-            var result = new DefaultInjectionProcessor().Process(processingStreams);
+            var result = new DefaultInjectionProcessor().Process(workbook, processingStreams);
 
             processingStreams.OperationStream
                 .Select(operation => new
