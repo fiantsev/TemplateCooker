@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace PluginAbstraction
 {
@@ -11,5 +12,6 @@ namespace PluginAbstraction
         void CopyTo(ICellAbstraction cell);
         ICellAbstraction TopLeftCell();
         ICellAbstraction BottomRightCell();
+        IEnumerable<ICellAbstraction> CellsUsed();
     }
 }

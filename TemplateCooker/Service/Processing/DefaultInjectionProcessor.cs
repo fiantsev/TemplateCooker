@@ -36,7 +36,7 @@ namespace TemplateCooking.Service.Processing
                             Position = rowToInsertPosition.ToSrPosition().WithShift(rowShiftAccumulated),
                             RowsCount = rowCountToInsert
                         });
-                        operationStream.Add(new CopyPasteRowRange.Operation
+                        operationStream.Add(new CopyPasteRowRangeWithStylesAndFormulas.Operation
                         {
                             CopyFromRow = copyFromRow,
                             CopyToRow = copyToRow,

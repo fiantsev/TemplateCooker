@@ -32,12 +32,11 @@ namespace TemplateCookerUnitTests.DocumentInjection
                 InjectionProcessor = InjectRecipe.Options.DefaultInjectionProcessor,
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
-                Workbook = workbook,
             };
             var documentInjector = new InjectRecipe(documentInjectorOptions);
 
             //act
-            documentInjector.Cook();
+            documentInjector.Cook(workbook);
 
             //assert
             var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (1, 1, 1));
@@ -60,12 +59,11 @@ namespace TemplateCookerUnitTests.DocumentInjection
                 InjectionProcessor = InjectRecipe.Options.DefaultInjectionProcessor,
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
-                Workbook = workbook,
             };
             var documentInjector = new InjectRecipe(documentInjectorOptions);
 
             //act
-            documentInjector.Cook();
+            documentInjector.Cook(workbook);
 
             //assert
             var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (0, 0, 0));
@@ -85,12 +83,11 @@ namespace TemplateCookerUnitTests.DocumentInjection
                 InjectionProcessor = InjectRecipe.Options.DefaultInjectionProcessor,
                 InjectionProvider = new FuncInjectionProvider(_ => injection),
                 MarkerOptions = new MarkerOptions("{", ".", "}"),
-                Workbook = workbook,
             };
             var documentInjector = new InjectRecipe(documentInjectorOptions);
 
             //act
-            documentInjector.Cook();
+            documentInjector.Cook(workbook);
 
             //assert
             var values = excelHelper.ReadCellRangeValues(workbook, (0, 0, 0), (0, 0, 0));

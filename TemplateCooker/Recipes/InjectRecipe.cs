@@ -75,7 +75,7 @@ namespace TemplateCooking.Recipes
             switch (operation)
             {
                 case FillDownFormulas.Operation _: return new FillDownFormulas();
-                case CopyPasteRowRange.Operation _: return new CopyPasteRowRange();
+                case CopyPasteRowRangeWithStylesAndFormulas.Operation _: return new CopyPasteRowRangeWithStylesAndFormulas();
                 case InsertEmptyRows.Operation _: return new InsertEmptyRows();
                 case InsertImage.Operation _: return new InsertImage();
                 case InsertTable.Operation _: return new InsertTable();

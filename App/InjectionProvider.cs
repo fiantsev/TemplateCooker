@@ -63,7 +63,12 @@ namespace XlsxTemplateReporter
                 case "text1":
                     return new TextInjection { Resource = new TextResourceObject("www.google.com") };
                 default:
-                    throw new Exception("По маркеру нет данных");
+                    {
+                        var injection = TryParse(markerId);
+                        if(injection == null)
+                            throw new Exception("По маркеру нет данных");
+                        return injection;
+                    }
             }
         }
 
@@ -125,6 +130,26 @@ namespace XlsxTemplateReporter
 
 
             return dictionary;
+        }
+
+        private Injection TryParse(string markerId) {
+            if(markerId.First()=='{' || markerId.Last() == '}')
+            {
+                var markerContent = markerId.Substring(1, markerId.Length - 2);
+                var parts = markerContent.Split(',');
+                var height = int.Parse(parts[0]);
+                var width = int.Parse(parts[1]);
+                return CreateTableInjection(height, width, markerContent);
+            }
+            return null;
+        }
+
+        private Injection CreateTableInjection(int rowCount, int columnCount, string name)
+        {
+            var oneRow = Enumerable.Repeat((object)name, columnCount).ToList();
+            var allRows = Enumerable.Repeat(oneRow, rowCount).ToList();
+            var injection = new TableInjection { LayoutShift = LayoutShiftType.MoveRows, Resource = new TableResourceObject(allRows) };
+            return injection;
         }
     }
 }

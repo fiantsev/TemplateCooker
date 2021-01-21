@@ -5,9 +5,9 @@ using TemplateCooking.Domain.Layout;
 namespace TemplateCooking.Service.OperationExecutors
 {
     /// <summary>
-    /// Копирует выбранный диапазон строк и вставляет несколько раз в обозначенное место
+    /// Копирует выбранный диапазон строк и вставляет несколько раз в обозначенное место (переносяться только формулы и стили остальные данные удаляются)
     /// </summary>
-    public class CopyPasteRowRange : IOperationExecutor
+    public class CopyPasteRowRangeWithStylesAndFormulas : IOperationExecutor
     {
         public class Operation : AbstractOperation
         {
@@ -51,8 +51,15 @@ namespace TemplateCooking.Service.OperationExecutors
 
             for (var i = 0; i < options.PasteCount; ++i)
             {
+                //копируем регион целиком
                 var targetCell = sheet.GetRow(options.PasteStartRow.RowIndex + i * rangeHeight).GetCell(0);
                 range.CopyTo(targetCell);
+
+                //удаляем данные во всех ячейках, которые не являються формулами
+                var lastCell = sheet.GetRow(targetCell.RowIndex + range.Height - 1).GetCell(targetCell.ColumnIndex + range.Width - 1);
+                foreach (var cell in sheet.GetRange(targetCell, lastCell).CellsUsed())
+                    if (!cell.HasFormula)
+                        cell.SetValue("");
             }
         }
     }
