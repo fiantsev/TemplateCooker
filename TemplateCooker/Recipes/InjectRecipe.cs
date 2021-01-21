@@ -31,17 +31,14 @@ namespace TemplateCooking.Recipes
 
         public void Cook(IWorkbookAbstraction workbook)
         {
-            foreach (var sheet in workbook.GetSheets())
-            {
-                var injectionContexts = GenerateInjections(workbook, sheet);
-                var processedInjectionContexts = ProcessInjections(workbook, injectionContexts);
-                ExecuteInjections(workbook, processedInjectionContexts);
-            }
+            var injectionContexts = GenerateInjections(workbook);
+            var processedInjectionContexts = ProcessInjections(workbook, injectionContexts);
+            ExecuteInjections(workbook, processedInjectionContexts);
         }
 
-        private List<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook, ISheetAbstraction sheet)
+        private List<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook)
         {
-            var markers = new MarkerExtractor(sheet, _options.MarkerOptions).GetMarkers();
+            var markers = new MarkerExtractor(workbook, _options.MarkerOptions).GetMarkers();
 
             var markerRanges = new MarkerRangeCollection(markers);
 

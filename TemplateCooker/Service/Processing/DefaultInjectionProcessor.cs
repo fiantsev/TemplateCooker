@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PluginAbstraction;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using TemplateCooking.Domain.Injections;
@@ -6,75 +7,66 @@ using TemplateCooking.Domain.Layout;
 using TemplateCooking.Domain.Markers;
 using TemplateCooking.Domain.ResourceObjects;
 using TemplateCooking.Service.OperationExecutors;
-using TemplateCooking.Service.ResourceInjection;
 using TemplateCooking.Service.Utils;
-using PluginAbstraction;
 
 namespace TemplateCooking.Service.Processing
 {
     public class DefaultInjectionProcessor : IInjectionProcessor
     {
-        public ProcessingStreams Process(IWorkbookAbstraction workbook,  ProcessingStreams processingStreams)
+        public ProcessingStreams Process(IWorkbookAbstraction workbook, ProcessingStreams processingStreams)
         {
-            if (processingStreams.InjectionStream.Select(x => x.MarkerRange.StartMarker.Position.SheetIndex).Distinct().Count() > 1)
-                throw new Exception("инъекции должны приходить по одному листу");
+            var injectionStream = processingStreams.InjectionStream;
+            var operationStream = processingStreams.OperationStream;
 
-            InnerProcessLayout(workbook, processingStreams);
+            foreach (var injectionsOnOneSheet in injectionStream.GroupBy(x => x.MarkerRange.StartMarker.Position.SheetIndex))
+            {
+                //при вставление новых строк последующие операции должны смещаться пропорционально
+                var rowShiftAccumulated = 0;
+                var sheetIndex = injectionsOnOneSheet.First().MarkerRange.StartMarker.Position.SheetIndex;
+                foreach (var injectionsOnOneRow in injectionsOnOneSheet.GroupBy(x => x.MarkerRange.StartMarker.Position.RowIndex))
+                {
+                    var (rowCountToInsert, rowToInsertPosition, startMarkerPosition, pasteCount) = FindHowMuchNewEmptyRowsToInsertAndWhere(workbook, injectionsOnOneRow.ToList());
+
+                    if (rowCountToInsert > 0)
+                    {
+                        var copyFromRow = startMarkerPosition.ToSrPosition().WithShift(rowShiftAccumulated);
+                        var copyToRow = copyFromRow.WithShift(workbook.GetCell(startMarkerPosition).GetMergedRange().Height - 1);
+                        operationStream.Add(new InsertEmptyRows.Operation
+                        {
+                            Position = rowToInsertPosition.ToSrPosition().WithShift(rowShiftAccumulated),
+                            RowsCount = rowCountToInsert
+                        });
+                        operationStream.Add(new CopyPasteRowRange.Operation
+                        {
+                            CopyFromRow = copyFromRow,
+                            CopyToRow = copyToRow,
+                            PasteStartRow = rowToInsertPosition.ToSrPosition().WithShift(rowShiftAccumulated + 1),
+                            PasteCount = pasteCount,
+                        });
+                        operationStream.AddRange(injectionsOnOneRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(rowShiftAccumulated))));
+                        rowShiftAccumulated += rowCountToInsert;
+                    }
+                    else
+                    {
+                        operationStream.AddRange(injectionsOnOneRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(rowShiftAccumulated))));
+                    }
+                }
+            }
 
             return processingStreams;
         }
 
-
-        private void InnerProcessLayout(IWorkbookAbstraction workbook, ProcessingStreams processingStreams)
-        {
-            var injectionStream = processingStreams.InjectionStream;
-            var operationStream = processingStreams.OperationStream;
-            //при вставление новых строк последующие операции должны смещаться пропорционально
-            var previousRowShiftAmountAccumulated = 0;
-
-            injectionStream
-                .GroupBy(x => x.MarkerRange.StartMarker.Position.RowIndex)
-                .ToList()
-                .ForEach(contextsOnSameRow =>
-                {
-                    var firstContext = contextsOnSameRow.First();
-                    var sheetIndex = firstContext.MarkerRange.StartMarker.Position.SheetIndex;
-                    var rowIndex = firstContext.MarkerRange.StartMarker.Position.RowIndex;
-
-                    //HACK: refactoring
-                    var (rowCountToInsert, rowToInsertPosition, startMarkerPosition, pasteCount) = FindHowMuchNewEmptyRowsToInsertAndWhere(workbook, contextsOnSameRow.ToList());
-
-                    if (rowCountToInsert > 0)
-                    {
-                        operationStream.Add(new InsertEmptyRows.Operation { Position = rowToInsertPosition.ToSrPosition().WithShift(previousRowShiftAmountAccumulated), RowsCount = rowCountToInsert });
-                        operationStream.Add(new CopyPasteRowRange.Operation {
-                            CopyFromRow = new SrPosition(sheetIndex, startMarkerPosition.RowIndex + previousRowShiftAmountAccumulated),
-                            CopyToRow = new SrPosition(sheetIndex, startMarkerPosition.RowIndex + workbook.GetCell(startMarkerPosition).GetMergedRange().Height - 1 + previousRowShiftAmountAccumulated),
-                            PasteStartRow = rowToInsertPosition.ToSrPosition().WithShift(previousRowShiftAmountAccumulated+1),
-                            PasteCount = pasteCount,
-                        });
-                        operationStream.AddRange(contextsOnSameRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(previousRowShiftAmountAccumulated))));
-                        //operationStream.Add(new FillDownFormulas.Operation { From = new SrPosition(sheetIndex, rowIndex + previousRowShiftAmountAccumulated), To = new SrPosition(sheetIndex, rowIndex + rowCountToInsert + previousRowShiftAmountAccumulated) });
-                        previousRowShiftAmountAccumulated += rowCountToInsert;
-                    }
-                    else
-                    {
-                        operationStream.AddRange(contextsOnSameRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(previousRowShiftAmountAccumulated))));
-                    }
-                });
-        }
-
-        //HACK: refactoring return type to seprate class
-        private (int, SrcPosition, SrcPosition, int) FindHowMuchNewEmptyRowsToInsertAndWhere(IWorkbookAbstraction workbook, List<InjectionContext> contexts)
+        /// <summary>
+        /// rowCountToInsert - количество строк которое необходимо вставить
+        /// rowToInsertPosition - позиция строки после которой необходимо вставить пустые строки
+        /// startMarkerPosition - позиция маркера для которого необходимо стили строк продублировать ниже
+        /// pasteCount - количество копипаста строк для сохранения стиля
+        /// </summary>
+        private (int rowCountToInsert, SrcPosition rowToInsertPosition, SrcPosition startMarkerPosition, int pasteCount)
+            FindHowMuchNewEmptyRowsToInsertAndWhere(IWorkbookAbstraction workbook, List<InjectionContext> contexts)
         {
             var tables = contexts
-                .Where(x =>
-                {
-                    if (x.Injection is TableInjection tableInjection && tableInjection.LayoutShift == LayoutShiftType.MoveRows)
-                        return true;
-                    else
-                        return false;
-                })
+                .Where(x => x.Injection is TableInjection tableInjection && tableInjection.LayoutShift == LayoutShiftType.MoveRows)
                 .Select(x => new
                 {
                     Context = x,
@@ -91,7 +83,7 @@ namespace TemplateCooking.Service.Processing
 
             var countOfNewRowsToInsert = Math.Max(0, max.RowCount - 1) * max.StartMarkerCellHeight;
             var positionToInsertNewRows = max.Context.MarkerRange.StartMarker.Position.WithShift(max.StartMarkerCellHeight - 1, 0);
-            return (countOfNewRowsToInsert, positionToInsertNewRows, max.Context.MarkerRange.StartMarker.Position, max.RowCount - 1 );
+            return (countOfNewRowsToInsert, positionToInsertNewRows, max.Context.MarkerRange.StartMarker.Position, max.RowCount - 1);
         }
 
         private AbstractOperation ConvertToOperation(Injection injection, MarkerRange markerRange)

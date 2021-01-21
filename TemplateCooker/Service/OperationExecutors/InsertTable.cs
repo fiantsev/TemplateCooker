@@ -64,13 +64,7 @@ namespace TemplateCooking.Service.OperationExecutors
                 return;
 
             var topLeftCellHeight = topLeftCell.GetMergedRange().Height;
-            var bottomRightCell = topLeftCell.GetMergedCells(1, columnCount).Last().GetMergedRange().BottomRightCell();
-            var range = sheet.GetRange(topLeftCell, bottomRightCell);
-
-            //обработка кейса: если первая ячейка смердженная а последняя нет
-            //область для копирования составляем по высоте первой ячейки
-            if (topLeftCellHeight > range.Height)
-                range = sheet.GetRange(topLeftCell, sheet.GetRow(topLeftCell.RowIndex + topLeftCellHeight - 1).GetCell(bottomRightCell.ColumnIndex));
+            var range = topLeftCell.GetMergedRange();
 
             for (var i = 1; i < rowCount; ++i)
             {
