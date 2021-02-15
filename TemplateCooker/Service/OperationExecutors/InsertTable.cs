@@ -1,6 +1,5 @@
 ﻿using PluginAbstraction;
 using System.Collections.Generic;
-using System.Linq;
 using TemplateCooking.Domain.Layout;
 
 namespace TemplateCooking.Service.OperationExecutors
@@ -21,10 +20,13 @@ namespace TemplateCooking.Service.OperationExecutors
             /// </summary>
             public List<List<object>> Table { get; set; }
             /// <summary>
-            /// Применить стили ячеек первой строки ко всем последующим ячейкам (в строках ниже).
-            /// Может использоваться при вставление таблиц с динамическим количеством строк
+            /// Если больше нуля - то включаются фиксированные отступы по строкам и не учитывается высота смердженных ячеек
             /// </summary>
-            public bool PreserveStyleOfFirstCell { get; set; }
+            public int FixedRowStep { get; set; }
+            /// <summary>
+            /// Если больше нуля - то включаются фиксированные отступы по столбцам и не учитывается ширина смердженных ячеек
+            /// </summary>
+            public int FixedColumnStep { get; set; }
         }
 
         public void Execute(IWorkbookAbstraction workbook, object untypedOptions)
@@ -41,35 +43,15 @@ namespace TemplateCooking.Service.OperationExecutors
             if (rowCount == 0 || columnCount == 0)
                 topLeftCell.SetValue(string.Empty);
 
-            //здесь мы копируем контент первой строки ниже - чтобы стили ячеек (включая смердженные регионы) скопировались
-            if(options.PreserveStyleOfFirstCell)
-                CloneFirstRowBelow(sheet, topLeftCell, rowCount, columnCount);
-
             //здесь мы вставляем контент в ячейки
             var cellCounter = 0;
-            foreach (var cell in topLeftCell.GetMergedCells(rowCount, columnCount))
+            foreach (var cell in topLeftCell.GetMergedCells(rowCount, columnCount, options.FixedRowStep, options.FixedColumnStep))
             {
                 var rowIndex = cellCounter / columnCount;
                 var columnIndex = cellCounter % columnCount;
                 var value = table[rowIndex][columnIndex];
                 cell.SetValue(value);
                 ++cellCounter;
-            }
-        }
-
-
-        private void CloneFirstRowBelow(ISheetAbstraction sheet, ICellAbstraction topLeftCell, int rowCount, int columnCount)
-        {
-            if (rowCount == 0 || columnCount == 0)
-                return;
-
-            var topLeftCellHeight = topLeftCell.GetMergedRange().Height;
-            var range = topLeftCell.GetMergedRange();
-
-            for (var i = 1; i < rowCount; ++i)
-            {
-                var toCell = sheet.GetRow(topLeftCell.RowIndex + i * topLeftCellHeight).GetCell(topLeftCell.ColumnIndex);
-                range.CopyTo(toCell);
             }
         }
     }
