@@ -33,9 +33,9 @@ namespace ClosedXmlPlugin
             return cells;
         }
 
-        public IEnumerable<ICellAbstraction> GetUsedCells()
+        public IEnumerable<ICellAbstraction> GetUsedCells(bool includeFormats)
         {
-            return _row.CellsUsed().Select(x => new CellImplementation(x));
+            return _row.CellsUsed(includeFormats).Select(x => new CellImplementation(x));
         }
 
         public void InsertRowsBelow(int rowsCount)

@@ -3,11 +3,20 @@ using TemplateCooking.Domain.Layout;
 
 namespace TemplateCooking.Service.OperationExecutors
 {
+    /// <summary>
+    /// Вставить несколько пустых строк ниже заданной позиции
+    /// </summary>
     public class InsertEmptyRows : IOperationExecutor
     {
         public class Operation : AbstractOperation
         {
+            /// <summary>
+            /// Количество строк для вставки
+            /// </summary>
             public int RowsCount { get; set; }
+            /// <summary>
+            /// Позиция строки ниже которой будут вставлены пустые строки
+            /// </summary>
             public SrPosition Position { get; set; }
         }
 

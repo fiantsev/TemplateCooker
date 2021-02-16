@@ -2,13 +2,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TemplateCooking.Service.Processing;
+using TemplateCooking.Domain.Injections;
 using TemplateCooking.Domain.Markers;
 using TemplateCooking.Service.Extraction;
 using TemplateCooking.Service.InjectionProviders;
 using TemplateCooking.Service.OperationExecutors;
 using TemplateCooking.Service.Processing;
-using TemplateCooking.Service.ResourceInjection;
 
 namespace TemplateCooking.Recipes
 {
@@ -16,7 +15,6 @@ namespace TemplateCooking.Recipes
     {
         public class Options
         {
-            public IWorkbookAbstraction Workbook { get; set; }
             public IInjectionProcessor InjectionProcessor { get; set; }
             public IInjectionProvider InjectionProvider { get; set; }
             public MarkerOptions MarkerOptions { get; set; }
@@ -31,26 +29,16 @@ namespace TemplateCooking.Recipes
             _options = options;
         }
 
-        public void Cook()
+        public void Cook(IWorkbookAbstraction workbook)
         {
-            InjectDataSheetBySheet();
+            var injectionContexts = GenerateInjections(workbook);
+            var processedInjectionContexts = ProcessInjections(workbook, injectionContexts);
+            ExecuteInjections(workbook, processedInjectionContexts);
         }
 
-        public void InjectDataSheetBySheet()
+        private List<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook)
         {
-            IWorkbookAbstraction workbook = _options.Workbook;
-
-            foreach (var sheet in workbook.GetSheets())
-            {
-                var injectionContexts = GenerateInjections(workbook, sheet);
-                var processedInjectionContexts = ProcessInjections(injectionContexts);
-                ExecuteInjections(workbook, processedInjectionContexts);
-            }
-        }
-
-        private List<InjectionContext> GenerateInjections(IWorkbookAbstraction workbook, ISheetAbstraction sheet)
-        {
-            var markers = new MarkerExtractor(sheet, _options.MarkerOptions).GetMarkers();
+            var markers = new MarkerExtractor(workbook, _options.MarkerOptions).GetMarkers();
 
             var markerRanges = new MarkerRangeCollection(markers);
 
@@ -59,19 +47,17 @@ namespace TemplateCooking.Recipes
                 {
                     MarkerRange = markerRange,
                     Injection = _options.InjectionProvider.Resolve(markerRange.StartMarker.Id),
-                    Workbook = workbook
                 });
 
             return injections.ToList();
         }
 
-        private List<AbstractOperation> ProcessInjections(List<InjectionContext> injectionStream)
+        private List<AbstractOperation> ProcessInjections(IWorkbookAbstraction workbook, List<InjectionContext> injectionStream)
         {
-            var processingStreams = _options.InjectionProcessor.Process(new ProcessingStreams
-            {
-                InjectionStream = injectionStream,
-                OperationStream = new List<AbstractOperation>(),
-            });
+            var processingStreams = _options.InjectionProcessor.Process(
+                workbook,
+                new ProcessingStreams { InjectionStream = injectionStream, OperationStream = new List<AbstractOperation>() }
+            );
             return processingStreams.OperationStream;
         }
 
@@ -89,6 +75,7 @@ namespace TemplateCooking.Recipes
             switch (operation)
             {
                 case FillDownFormulas.Operation _: return new FillDownFormulas();
+                case CopyPasteRowRangeWithStylesAndFormulas.Operation _: return new CopyPasteRowRangeWithStylesAndFormulas();
                 case InsertEmptyRows.Operation _: return new InsertEmptyRows();
                 case InsertImage.Operation _: return new InsertImage();
                 case InsertTable.Operation _: return new InsertTable();

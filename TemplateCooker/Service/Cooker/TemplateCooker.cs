@@ -20,22 +20,19 @@ namespace TemplateCooking.Service.Cooker
 
         public List<Marker> ExtractMarkers(ExtractMarkersRecipe.Options options)
         {
-            options.Workbook = _workbook;
-            var markers = new ExtractMarkersRecipe(options).Cook();
+            var markers = new ExtractMarkersRecipe(options).Cook(_workbook);
             return markers;
         }
 
         public TemplateCooker InjectData(InjectRecipe.Options options)
         {
-            options.Workbook = _workbook;
-            new InjectRecipe(options).Cook();
+            new InjectRecipe(options).Cook(_workbook);
             return this;
         }
 
         public TemplateCooker SetCustomProperties(SetCustomPropertiesRecipe.Options options)
         {
-            options.Workbook = _workbook;
-            new SetCustomPropertiesRecipe(options).Cook();
+            new SetCustomPropertiesRecipe(options).Cook(_workbook);
             return this;
         }
 

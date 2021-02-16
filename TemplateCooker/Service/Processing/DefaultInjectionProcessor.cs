@@ -1,94 +1,95 @@
-﻿using System;
+﻿using PluginAbstraction;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using TemplateCooking.Service.Processing;
 using TemplateCooking.Domain.Injections;
 using TemplateCooking.Domain.Layout;
 using TemplateCooking.Domain.Markers;
 using TemplateCooking.Domain.ResourceObjects;
 using TemplateCooking.Service.OperationExecutors;
-using TemplateCooking.Service.ResourceInjection;
 using TemplateCooking.Service.Utils;
 
 namespace TemplateCooking.Service.Processing
 {
     public class DefaultInjectionProcessor : IInjectionProcessor
     {
-        public ProcessingStreams Process(ProcessingStreams processingStreams)
+        public ProcessingStreams Process(IWorkbookAbstraction workbook, ProcessingStreams processingStreams)
         {
-            if (processingStreams.InjectionStream.Select(x => x.MarkerRange.StartMarker.Position.SheetIndex).Distinct().Count() > 1)
-                throw new Exception("инъекции должны приходить по одному листу");
+            var injectionStream = processingStreams.InjectionStream;
+            var operationStream = processingStreams.OperationStream;
 
-            InnerProcessLayout(processingStreams);
+            foreach (var injectionsOnOneSheet in injectionStream.GroupBy(x => x.MarkerRange.StartMarker.Position.SheetIndex))
+            {
+                //при вставление новых строк последующие операции должны смещаться пропорционально
+                var rowShiftAccumulated = 0;
+                var sheetIndex = injectionsOnOneSheet.First().MarkerRange.StartMarker.Position.SheetIndex;
+
+                foreach (var injectionsOnOneRow in injectionsOnOneSheet.GroupBy(x => x.MarkerRange.StartMarker.Position.RowIndex))
+                {
+                    var rowIndex = injectionsOnOneRow.First().MarkerRange.StartMarker.Position.RowIndex;
+                    var srPositionWithShift = new SrPosition(sheetIndex, rowIndex).WithShift(rowShiftAccumulated);
+                    var (maxCellHeight, maxRowCount) = FindMaximums(workbook, injectionsOnOneRow.ToList());
+
+                    //количество новых вставок необходимых произвести
+                    var insertionCount = Math.Max(0, maxRowCount - 1);
+                    //сколько пустых строк нужно вставить что бы все данные пришедшие из таблиц уместились
+                    var rowCountToInsert = insertionCount * maxCellHeight;
+
+                    if (rowCountToInsert > 0)
+                    {
+                        operationStream.Add(new InsertEmptyRows.Operation
+                        {
+                            Position = srPositionWithShift.WithShift(maxCellHeight - 1),
+                            RowsCount = rowCountToInsert
+                        });
+                        operationStream.Add(new CopyPasteRowRangeWithStylesAndFormulas.Operation
+                        {
+                            CopyFromRow = srPositionWithShift,
+                            CopyToRow = srPositionWithShift.WithShift(maxCellHeight - 1),
+                            PasteStartRow = srPositionWithShift.WithShift(maxCellHeight - 1).WithShift(1),
+                            PasteCount = insertionCount,
+                        });
+                        operationStream.AddRange(injectionsOnOneRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(rowShiftAccumulated), maxCellHeight)));
+                        rowShiftAccumulated += rowCountToInsert;
+                    }
+                    else
+                    {
+                        operationStream.AddRange(injectionsOnOneRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(rowShiftAccumulated), maxCellHeight)));
+                    }
+                }
+            }
 
             return processingStreams;
         }
 
-
-        private void InnerProcessLayout(ProcessingStreams processingStreams)
+        /// <summary>
+        /// maxCellHeight - максимальная высота ячейки с маркером (смердженная ячейка может включать несколько строк в себя)
+        /// maxRowCount - максимальное количество строк пришедших в табличных данных
+        /// </summary>
+        private (int maxCellHeight, int maxRowCount) FindMaximums(IWorkbookAbstraction workbook, List<InjectionContext> contexts)
         {
-            var injectionStream = processingStreams.InjectionStream;
-            var operationStream = processingStreams.OperationStream;
-            //при вставление новых строк последующие операции должны смещаться пропорционально
-            var previousRowShiftAmountAccumulated = 0;
+            //находим все таблицы со смещением строк (расположенные на одной строке)
+            //их может и не быть ни одной
+            var tablesWithMoveRows = contexts
+                .Where(x => x.Injection is TableInjection tableInjection && tableInjection.LayoutShift == LayoutShiftType.MoveRows);
 
-            injectionStream
-                .GroupBy(x => x.MarkerRange.StartMarker.Position.RowIndex)
-                .ToList()
-                .ForEach(contextsOnSameRow =>
-                {
-                    var firstContext = contextsOnSameRow.First();
-                    var workbook = firstContext.Workbook;
-                    var sheetIndex = firstContext.MarkerRange.StartMarker.Position.SheetIndex;
-                    var rowIndex = firstContext.MarkerRange.StartMarker.Position.RowIndex;
+            if (tablesWithMoveRows.Count() == 0)
+                return (0, 0);
 
-                    var (rowCountToInsert, rowToInsertPosition) = FindHowMuchNewEmptyRowsToInsertAndWhere(contextsOnSameRow.ToList());
+            //находим высоту самого высокого маркера
+            var maxCellHeight = tablesWithMoveRows
+                .Max(x => workbook.GetCell(x.MarkerRange.StartMarker.Position).GetMergedRange().Height);
 
-                    if (rowCountToInsert > 0)
-                    {
-                        operationStream.Add(new InsertEmptyRows.Operation { Position = rowToInsertPosition.ToSrPosition().WithShift(previousRowShiftAmountAccumulated), RowsCount = rowCountToInsert });
-                        operationStream.AddRange(contextsOnSameRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(previousRowShiftAmountAccumulated))));
-                        operationStream.Add(new FillDownFormulas.Operation { From = new SrPosition(sheetIndex, rowIndex + previousRowShiftAmountAccumulated), To = new SrPosition(sheetIndex, rowIndex + rowCountToInsert + previousRowShiftAmountAccumulated) });
+            //находим максимальное количество строк пришедших в данных какой либо из таблиц
+            var maxRowCount = tablesWithMoveRows
+                .Max(x => (x.Injection as TableInjection).Resource.Object.Count);
 
-                        previousRowShiftAmountAccumulated += rowCountToInsert;
-                    }
-                    else
-                    {
-                        operationStream.AddRange(contextsOnSameRow.Select(x => ConvertToOperation(x.Injection, x.MarkerRange.WithShift(previousRowShiftAmountAccumulated))));
-                    }
-                });
+            return (maxCellHeight, maxRowCount);
         }
 
-        private (int, SrcPosition) FindHowMuchNewEmptyRowsToInsertAndWhere(List<InjectionContext> contexts)
-        {
-            var tables = contexts
-                .Where(x =>
-                {
-                    if (x.Injection is TableInjection tableInjection && tableInjection.LayoutShift == LayoutShiftType.MoveRows)
-                        return true;
-                    else
-                        return false;
-                })
-                .Select(x => new
-                {
-                    Context = x,
-                    StartMarkerCellHeight = x.Workbook.GetCell(x.MarkerRange.StartMarker.Position).GetMergedRange().Height,
-                    RowCount = (x.Injection as TableInjection).Resource.Object.Count
-                });
 
-            var max = tables
-                .OrderByDescending(x => x.StartMarkerCellHeight * x.RowCount)
-                .FirstOrDefault();
-
-            if (max == null)
-                return (0, null);
-
-            var countOfNewRowsToInsert = Math.Max(0, max.RowCount - 1) * max.StartMarkerCellHeight;
-            var positionToInsertNewRows = max.Context.MarkerRange.StartMarker.Position.WithShift(max.StartMarkerCellHeight - 1, 0);
-            return (countOfNewRowsToInsert, positionToInsertNewRows);
-        }
-
-        private AbstractOperation ConvertToOperation(Injection injection, MarkerRange markerRange)
+        /// <summary> TODO: избавиться от этой функции => для этог слить воедино (Injection и Injection.Operation) => в одну абстракцию </summary>
+        private AbstractOperation ConvertToOperation(Injection injection, MarkerRange markerRange, int fixedRowStep)
         {
             switch (injection)
             {
@@ -97,7 +98,9 @@ namespace TemplateCooking.Service.Processing
                     {
                         Position = markerRange.StartMarker.Position,
                         Table = tableInjection.Resource.Object,
-                        PreserveStyleOfFirstCell = tableInjection.LayoutShift == LayoutShiftType.MoveRows
+                        FixedRowStep = tableInjection.LayoutShift == LayoutShiftType.MoveRows
+                            ? fixedRowStep
+                            : 0
                     };
                 case ImageInjection imageInjection:
                     return new InsertImage.Operation

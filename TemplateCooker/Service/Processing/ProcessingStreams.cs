@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using TemplateCooking.Domain.Injections;
 using TemplateCooking.Service.OperationExecutors;
-using TemplateCooking.Service.ResourceInjection;
 
 namespace TemplateCooking.Service.Processing
 {

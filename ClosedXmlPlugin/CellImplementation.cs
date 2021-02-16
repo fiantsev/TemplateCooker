@@ -58,9 +58,9 @@ namespace ClosedXmlPlugin
             }
         }
 
-        public IMergedCellCollectionAbstraction GetMergedCells(int rowCount, int columnCount)
+        public IMergedCellCollectionAbstraction GetMergedCells(int rowCount, int columnCount, int fixedRowStep, int fixedColumnStep)
         {
-            return new MergedCellCollectionImplementation(_cell, rowCount, columnCount);
+            return new MergedCellCollectionImplementation(_cell, rowCount, columnCount, fixedRowStep, fixedColumnStep);
         }
 
         public string GetStringValue()

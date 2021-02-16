@@ -17,7 +17,7 @@ namespace PluginAbstraction
 
         void SetValue(object value);
 
-        IMergedCellCollectionAbstraction GetMergedCells(int rowCount, int columnCount);
+        IMergedCellCollectionAbstraction GetMergedCells(int rowCount, int columnCount, int fixedRowStep, int fixedColumnStep);
 
         void Copy(ICellAbstraction cell);
         IRangeAbstraction GetMergedRange();

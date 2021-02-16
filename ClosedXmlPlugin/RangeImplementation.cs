@@ -1,6 +1,8 @@
 ﻿using ClosedXML.Excel;
 using PluginAbstraction;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace ClosedXmlPlugin
 {
@@ -40,6 +42,11 @@ namespace ClosedXmlPlugin
         public ICellAbstraction BottomRightCell()
         {
             return new CellImplementation(_range.LastCell());
+        }
+
+        public IEnumerable<ICellAbstraction> CellsUsed()
+        {
+            return _range.CellsUsed().Select(x => new CellImplementation(x));
         }
     }
 }

@@ -41,7 +41,7 @@ namespace TemplateCooking.Service.Extraction
             {
                 foreach (var row in sheet.GetUsedRows())
                 {
-                    foreach (var cell in row.GetUsedCells())
+                    foreach (var cell in row.GetUsedCells(false))
                     {
                         var markerId = CellUtils.ExtractMarkerValueOrNull(cell, _markerOptions);
                         if (markerId == null)
