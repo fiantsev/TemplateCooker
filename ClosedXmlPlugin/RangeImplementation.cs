@@ -1,5 +1,6 @@
 ﻿using ClosedXML.Excel;
 using PluginAbstraction;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -31,7 +32,13 @@ namespace ClosedXmlPlugin
         public void CopyTo(ICellAbstraction cell)
         {
             var _cell = _range.Worksheet.Row(cell.RowIndex + 1).Cell(cell.ColumnIndex + 1);
-            _cell.Value = this._range;
+            //HACK: WORKAROUND: https://github.com/ClosedXML/ClosedXML/pull/1527
+            //если есть условное форматирования в документе то при включенном режиме смещения строк, возникает исключение
+            try
+            {
+                _cell.Value = this._range;
+            }
+            catch (NullReferenceException _) { }
         }
 
         public ICellAbstraction TopLeftCell()
