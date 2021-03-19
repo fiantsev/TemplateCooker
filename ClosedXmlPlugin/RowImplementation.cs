@@ -33,9 +33,14 @@ namespace ClosedXmlPlugin
             return cells;
         }
 
-        public IEnumerable<ICellAbstraction> GetUsedCells(bool includeFormats)
+        /// <summary>
+        /// Без учета ячеек с условным форматированием
+        /// </summary>
+        /// <returns></returns>
+        public IEnumerable<ICellAbstraction> GetUsedCells()
         {
-            return _row.CellsUsed(includeFormats).Select(x => new CellImplementation(x));
+            var scope = XLCellsUsedOptions.All ^ XLCellsUsedOptions.ConditionalFormats; //выключаем один бит
+            return _row.CellsUsed(scope).Select(x => new CellImplementation(x));
         }
 
         public void InsertRowsBelow(int rowsCount)
