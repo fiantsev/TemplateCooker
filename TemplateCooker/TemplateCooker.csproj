@@ -4,9 +4,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>TilliWilli</Authors>
-    <Version>1.0.26</Version>
+    <Version>1.0.28</Version>
     <Description>Excel reporting assistant</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RootNamespace>TemplateCooking</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -82,7 +82,7 @@ namespace TemplateCooking.Service.Processing
 
             //находим максимальное количество строк пришедших в данных какой либо из таблиц
             var maxRowCount = tablesWithMoveRows
-                .Max(x => (x.Injection as TableInjection).Resource.Object.Count);
+                .Max(x => (x.Injection as TableInjection).Resource.Object.Height);
 
             return (maxCellHeight, maxRowCount);
         }
@@ -100,7 +100,9 @@ namespace TemplateCooking.Service.Processing
                         Table = tableInjection.Resource.Object,
                         FixedRowStep = tableInjection.LayoutShift == LayoutShiftType.MoveRows
                             ? fixedRowStep
-                            : 0
+                            : 0,
+                        MergeColumnHeaders = tableInjection.MergeColumnHeaders,
+                        MergeRowHeaders = tableInjection.MergeRowHeaders,
                     };
                 case ImageInjection imageInjection:
                     return new InsertImage.Operation

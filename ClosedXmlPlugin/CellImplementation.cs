@@ -100,5 +100,8 @@ namespace ClosedXmlPlugin
                 : _cell.Worksheet.Range(_cell, _cell);
             return new RangeImplementation(range);
         }
+
+        public string Address => _cell.Address.ToString();
+        public ISheetAbstraction Sheet => new SheetImplementation(_cell.Worksheet);
     }
 }
