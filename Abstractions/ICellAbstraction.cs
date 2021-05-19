@@ -21,5 +21,7 @@ namespace PluginAbstraction
 
         void Copy(ICellAbstraction cell);
         IRangeAbstraction GetMergedRange();
+        string Address { get; }
+        ISheetAbstraction Sheet { get; }
     }
 }

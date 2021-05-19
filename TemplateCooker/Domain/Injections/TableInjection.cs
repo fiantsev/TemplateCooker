@@ -7,5 +7,7 @@ namespace TemplateCooking.Domain.Injections
         public TableResourceObject Resource { get; set; }
 
         public LayoutShiftType LayoutShift { get; set; }
+        public bool MergeColumnHeaders { get; set; }
+        public bool MergeRowHeaders { get; set; }
     }
 }

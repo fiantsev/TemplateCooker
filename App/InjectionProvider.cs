@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TemplateCooking.Domain.Injections;
 using TemplateCooking.Domain.ResourceObjects;
+using TemplateCooking.Domain.Injections;
 using TemplateCooking.Service.InjectionProviders;
 
 namespace XlsxTemplateReporter
@@ -62,6 +62,12 @@ namespace XlsxTemplateReporter
                     }
                 case "text1":
                     return new TextInjection { Resource = new TextResourceObject("www.google.com") };
+                case "table7":
+                    {
+                        var resource = GetResourceObjectStorage()["tableWithHeaders"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows, MergeColumnHeaders = false, MergeRowHeaders = true };
+
+                    }
                 default:
                     {
                         var injection = TryParse(markerId);
@@ -117,6 +123,30 @@ namespace XlsxTemplateReporter
                 new List<object> { 3 },
             };
 
+            var tableWithHeaders = new TableWithHeaders(
+                new List<List<object>>{
+                    new List<object> { "2016", "2016", "2017", "2017" },
+                    new List<object> { "Q1", "Q1", "Q1", "Q1", },
+                    new List<object> { "January", "February", "January", "February" },
+                },
+                new List<List<object>>{
+                    new List<object> { "Russia", "Moscow" },
+                    new List<object> { "Russia", "Moscow" },
+                    new List<object> { "Japan", "Tokyo" },
+                    new List<object> { "Japan", "Tokyo" },
+                    new List<object> { "Japan", "Nara" },
+                    new List<object> { "USA", "NewYork" },
+                },
+                new List<List<object>>{
+                    new List<object> { 11, 12, 13, 14 },
+                    new List<object> { 21, 22, 23, 24 },
+                    new List<object> { 31, 32, 33, 34 },
+                    new List<object> { 41, 42, 43, 44 },
+                    new List<object> { 51, 52, 53, 54 },
+                    new List<object> { 61, 62, 63, 64 },
+                }
+            );
+
             var dictionary = new Dictionary<string, ResourceObject>
             {
                 { nameof(tableOfInt), new TableResourceObject(tableOfInt) },
@@ -126,6 +156,7 @@ namespace XlsxTemplateReporter
                 { nameof(tableOneColumnOfInt), new TableResourceObject(tableOneColumnOfInt) },
                 { nameof(tableOneColumnOf2Int), new TableResourceObject(tableOneColumnOf2Int) },
                 { nameof(tableOneColumnOf3Int), new TableResourceObject(tableOneColumnOf3Int) },
+                { nameof(tableWithHeaders), new TableResourceObject(tableWithHeaders) },
             };
 
 

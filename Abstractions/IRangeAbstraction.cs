@@ -13,5 +13,6 @@ namespace PluginAbstraction
         ICellAbstraction TopLeftCell();
         ICellAbstraction BottomRightCell();
         IEnumerable<ICellAbstraction> CellsUsed();
+        void Merge();
     }
 }

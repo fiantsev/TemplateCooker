@@ -55,5 +55,11 @@ namespace ClosedXmlPlugin
         {
             return _range.CellsUsed().Select(x => new CellImplementation(x));
         }
+
+        public void Merge()
+        {
+            _range.Merge();
+        }
+        
     }
 }
