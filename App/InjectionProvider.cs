@@ -68,6 +68,12 @@ namespace XlsxTemplateReporter
                         return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows, MergeColumnHeaders = false, MergeRowHeaders = true };
 
                     }
+                case "table8":
+                    {
+                        var resource = GetResourceObjectStorage()["tableWithHeaders2"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows, MergeColumnHeaders = true, MergeRowHeaders = true };
+
+                    }
                 default:
                     {
                         var injection = TryParse(markerId);
@@ -147,6 +153,27 @@ namespace XlsxTemplateReporter
                 }
             );
 
+            var tableWithHeaders2 = new TableWithHeaders(
+                new List<List<object>>{
+                    new List<object> { "Скидка", "Скидка" },
+                },
+                new List<List<object>>{
+                    new List<object> { "Итого" },
+                    new List<object> { "Moscow" },
+                    new List<object> { "Tokyo" },
+                    new List<object> { "Nara" },
+                    new List<object> { "NewYork" },
+                },
+                new List<List<object>>{
+                    new List<object> { null, 12 },
+                    new List<object> { 21, null },
+                    new List<object> { 31, null },
+                    new List<object> { 41, null },
+                    new List<object> { 51, null },
+                    new List<object> { 61, null },
+                }
+            );
+
             var dictionary = new Dictionary<string, ResourceObject>
             {
                 { nameof(tableOfInt), new TableResourceObject(tableOfInt) },
@@ -157,6 +184,7 @@ namespace XlsxTemplateReporter
                 { nameof(tableOneColumnOf2Int), new TableResourceObject(tableOneColumnOf2Int) },
                 { nameof(tableOneColumnOf3Int), new TableResourceObject(tableOneColumnOf3Int) },
                 { nameof(tableWithHeaders), new TableResourceObject(tableWithHeaders) },
+                { nameof(tableWithHeaders2), new TableResourceObject(tableWithHeaders2) },
             };
 
 

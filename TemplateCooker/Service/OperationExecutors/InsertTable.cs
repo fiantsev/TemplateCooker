@@ -134,6 +134,7 @@ namespace TemplateCooking.Service.OperationExecutors
                         var last = node.Data.Cells.Last();
                         var range = first.Sheet.GetRange(first, last.GetMergedRange().BottomRightCell());
                         range.Merge();
+                        first.SetValue(node.Data.Value);
                     }
                     else //в остальных случаях просто берем первую ячейку и выводим ее значение в эксель
                     {
