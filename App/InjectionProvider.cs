@@ -74,10 +74,22 @@ namespace XlsxTemplateReporter
                         return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows, MergeColumnHeaders = true, MergeRowHeaders = true };
 
                     }
+                case "table9":
+                    {
+                        var resource = GetResourceObjectStorage()["tableWithHeaders3"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.MoveRows, MergeColumnHeaders = true, MergeRowHeaders = true };
+
+                    }
+                case "table10":
+                    {
+                        var resource = GetResourceObjectStorage()["tableWithHeaders4"];
+                        return new TableInjection { Resource = (TableResourceObject)resource, LayoutShift = LayoutShiftType.None, MergeColumnHeaders = true, MergeRowHeaders = true };
+
+                    }
                 default:
                     {
                         var injection = TryParse(markerId);
-                        if(injection == null)
+                        if (injection == null)
                             throw new Exception("По маркеру нет данных");
                         return injection;
                     }
@@ -174,6 +186,42 @@ namespace XlsxTemplateReporter
                 }
             );
 
+            var tableWithHeaders3 = new TableWithHeaders(
+                new List<List<object>>{
+                    new List<object> { "Скидка", "Скидка" },
+                },
+                new List<List<object>>{
+                    new List<object> { "Moscow", "2016", "1" },
+                    new List<object> { "Moscow", "2016", "2" },
+                    new List<object> { "Nara", "2016", "1" },
+                    new List<object> { "Nara", "2016", "2" },
+                },
+                new List<List<object>>{
+                    new List<object> { 11, 12 },
+                    new List<object> { 21, 22 },
+                    new List<object> { 31, 32 },
+                    new List<object> { 41, 42 },
+                }
+            );
+
+            var tableWithHeaders4 = new TableWithHeaders(
+                new List<List<object>>{
+                    new List<object> { "Прибыль", "Прибыль" },
+                },
+                new List<List<object>>{
+                    new List<object> { "Барнаул", "2016" },
+                    new List<object> { "Барнаул", "2017" },
+                    new List<object> { "Москва", "2016" },
+                    new List<object> { "Москва", "2017" },
+                },
+                new List<List<object>>{
+                    new List<object> { 11, 12 },
+                    new List<object> { 21, 22 },
+                    new List<object> { 31, 32 },
+                    new List<object> { 41, 42 },
+                }
+            );
+
             var dictionary = new Dictionary<string, ResourceObject>
             {
                 { nameof(tableOfInt), new TableResourceObject(tableOfInt) },
@@ -185,14 +233,17 @@ namespace XlsxTemplateReporter
                 { nameof(tableOneColumnOf3Int), new TableResourceObject(tableOneColumnOf3Int) },
                 { nameof(tableWithHeaders), new TableResourceObject(tableWithHeaders) },
                 { nameof(tableWithHeaders2), new TableResourceObject(tableWithHeaders2) },
+                { nameof(tableWithHeaders3), new TableResourceObject(tableWithHeaders3) },
+                { nameof(tableWithHeaders4), new TableResourceObject(tableWithHeaders4) },
             };
 
 
             return dictionary;
         }
 
-        private Injection TryParse(string markerId) {
-            if(markerId.First()=='{' || markerId.Last() == '}')
+        private Injection TryParse(string markerId)
+        {
+            if (markerId.First() == '{' || markerId.Last() == '}')
             {
                 var markerContent = markerId.Substring(1, markerId.Length - 2);
                 var parts = markerContent.Split(',');

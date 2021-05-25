@@ -67,14 +67,6 @@ namespace TemplateCooking.Service.OperationExecutors
             //вставляем заголовки строк
             var bodyTopLeftCell = topLeftCell.GetMergedCells(columnHeadersHeight + 1, rowHeadersWidth + 1, options.FixedRowStep, options.FixedColumnStep).LastOrDefault();
             InsertFlatTable(bodyTopLeftCell, options.FixedRowStep, options.FixedColumnStep, options.Table.Body);
-
-            //кросс заголовок (верхняя левая ячейка) - мерджим в одну большую ячейку
-            if (columnHeadersHeight > 0 && rowHeadersWidth > 0)
-            {
-                var bottomCorner = topLeftCell.GetMergedCells(columnHeadersHeight, rowHeadersWidth, options.FixedRowStep, options.FixedColumnStep).LastOrDefault().GetMergedRange().BottomRightCell();
-                var crossHeaderRange = sheet.GetRange(topLeftCell, bottomCorner);
-                crossHeaderRange.Merge();
-            }
         }
 
         /// <summary>
